@@ -1,15 +1,23 @@
 #Re-assessment template 2025
+import os
+from IPython.display import display
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
 
 import nltk
 import spacy
 from pathlib import Path
-
+import pandas as pd
+from pandas import DataFrame
 
 nlp = spacy.load("en_core_web_sm")
 nlp.max_length = 2000000
 
+
+
+
+#(c)  flesch_kincaid: This function should return a dictionary mapping the title of each novel to its type-token
+#
 
 
 def fk_level(text, d):
@@ -40,10 +48,79 @@ def count_syl(word, d):
     pass
 
 
+
+
+#(a) read_novels: Each file in the novels directory contains the text of a novel,and the name of the file is the
+#    title, author, and year of publication of the novel, separated by hyphens. Complete the python function read_texts
+#    to do the following:
+# i.  create a pandas dataframe with the following columns: text, title, author, year [DONE]
+# ii. sort the dataframe by the year column before returning it, resetting or ignoring the dataframe index   [DONE]
+
 def read_novels(path=Path.cwd() / "texts" / "novels"):
     """Reads texts from a directory of .txt files and returns a DataFrame with the text, title,
-    author, and year"""
-    pass
+    author, and year
+
+    Args:
+        path (str): path to novels data.
+
+    Returns:
+        dataframe: sorted by the year column before returning it, resetting or ignoring the dataframe index
+
+    """
+    # REF - Lab 2 code (amended to handle relative directory path and convert to absolute file paths)
+    relpath = path
+    file_type = ".txt"  # if your data is not in a plain text format, you can change this
+    filenames = []
+    title = []
+    author = []
+    year = []
+    data = []
+
+    # this for loop will run through folders and subfolders looking for a specific file type
+    for root, dirs, files in os.walk(relpath, topdown=False):
+        # look through all the files in the given directory
+        for name in files:
+            if name.endswith(file_type):
+                #create absolute file path for each file found at specifed relative path (path)
+                #REF https://stackoverflow.com/questions/17429044/constructing-absolute-path-with-os-path-join
+                absolutepath = os.path.abspath(os.path.join(root, name))
+                #store absolute paths to files in list (as a list of file aboslute paths)
+                filenames.append(absolutepath)
+
+                items = name.split('-')
+                #title part from file name
+                title.append(items[0])
+                # store author part of file name to
+                author.append(items[1])
+                # store year part for file name to years (list) e.g (stripping '.txt' off the end of items[2] value)
+                year.append(items[2][:-4])
+
+    # this for loop then goes through the list of files (absolute file paths), reads the files, and then adds the text
+    # to Data (list)
+    for filename in filenames:
+        with open(filename, encoding='utf-8') as afile:
+            print(filename)
+            data.append(afile.read())  # read the file and then add it to the list
+            afile.close()  # close the file when you're done
+
+    #print(title)  #FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE THE LIST VALUES FOR TITLE
+    #print(author) #FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE THE LIST VALUES FOR AUTHOR
+    #print(year)   #FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE THE LIST VALUES FOR YEAR
+
+    data = {
+       "Text": data,
+       "Title": title,
+       "Author": author,
+       "Year": year
+    }
+
+    # create dataframe for novels data and sort by year
+    df = pd.DataFrame(data).sort_values('Year')
+    pd.set_option('display.max_columns', None)  # Display all columns. None - unlimited
+    pd.set_option('display.max_rows', None)   # Display all rows. None - unlimited
+    pd.set_option('display.width', None)   # Display width in characters for pandas. None - auto-detects width
+
+    return df
 
 
 def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
@@ -52,8 +129,12 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     pass
 
 
+#(b) nltk_trr: This function should resturn a dictionary mapping the title of each novel to its type-token ratio.
+#Tokenize the text using the NLTK library only. Do not include punctuation as tokens, and ignore case when counting
+#types
 def nltk_ttr(text):
     """Calculates the type-token ratio of a text. Text is tokenized using nltk.word_tokenize."""
+
     pass
 
 
@@ -96,10 +177,10 @@ if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
     """
-    #path = Path.cwd() / "p1-texts" / "novels"
-    #print(path)
-    #df = read_novels(path) # this line will fail until you have completed the read_novels function above.
-    #print(df.head())
+    path = Path.cwd() / "texts" / "novels"
+    print(path)
+    df = read_novels(path) # this line will fail until you have completed the read_novels function above.
+    print(df.head())
     #nltk.download("cmudict")
     #parse(df)
     #print(df.head())
