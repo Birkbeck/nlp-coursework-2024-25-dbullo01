@@ -17,7 +17,7 @@ import numpy as np
 
 # (a) Read the handsard40000.csv dataset in the texts directory into a dataframe. Subset and rename the dataframe as follows;
 # REF https://pandas.pydata.org/docs/reference/api/pandas.set_option.html
-df = pd.read_csv('C:\\Users\\db570\\PycharmProjects\\NLP_Coursework_2025\\nlp-coursework-2024-25-dbullo01\\p2-texts\\p2-texts\\hansard40000.csv')
+df = pd.read_csv('C:\\Users\\db570\\PycharmProjects\\NLP_Coursework_2025\\nlp-coursework-2024-25-dbullo01\\texts\\speeches\\hansard40000.csv')
 # print(df)  #PLEASE UNCOMMENT IF YOU WOULD LIKE TO DISPLAY DATAFRAME
 
 pd.set_option('display.max_columns', None)      # Display all columns. None - unlimited
