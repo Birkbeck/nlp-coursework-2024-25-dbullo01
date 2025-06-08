@@ -165,7 +165,11 @@ def LoadData_and_ExtractFeatures(df):
     #print("Vectorise training done: %f" % duration_train ," seconds")  #FOR DEBUG
     #print("Vectorise testing done: %f" % duration_test ," seconds")  #FOR DEBUG
 
-    return X_train_extracted_features, X_test_extracted_features, y_train, y_test
+    return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
+
+    # (c) Train RandomForest (with n_estimators=300) and SVM with linear kernel classifiers on the training set,
+    # and print teh scikit-learn macro-average f1 score and classification report for each classifier on the test set.
+    # The label that you are trying to predict is the 'party' value
 
 
 
