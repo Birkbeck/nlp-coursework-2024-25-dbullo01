@@ -116,7 +116,7 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
     }
 
     # create dataframe for novels data and sort by year
-    df = pd.DataFrame(data).sort_values('year')
+    df = pd.DataFrame(data).sort_values(by='year', ascending=True, ignore_index=True)
     pd.set_option('display.max_columns', None)  # Display all columns. None - unlimited
     pd.set_option('display.max_rows', None)   # Display all rows. None - unlimited
     pd.set_option('display.width', None)   # Display width in characters for pandas. None - auto-detects width
