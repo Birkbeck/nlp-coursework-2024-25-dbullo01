@@ -8,6 +8,8 @@ from time import time
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 
+
+
 # Part Two - Feature Extraction and Classification
 
 # In the second part of the coursework, your task is to train and test machine learning classifiers on a dataset of
@@ -115,7 +117,10 @@ def LoadData_and_ExtractFeatures(df):
         Args:
              df: pandas dataframe containing x (data) and y (labels)
         Returns:
-             none
+           X_train_extracted_features: Extracted tf-idf features from training data
+           X_test_extracted_features: Extracted tf-idf features from testing data
+           y_train:  labels training data
+           y_test:  labels testing data
     """
     # Checking the columns exist in the dataframe
     # display(df.columns) #FOR DEBUG
@@ -135,6 +140,7 @@ def LoadData_and_ExtractFeatures(df):
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=26, stratify=y)
 
+
     #REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html for examples
     # of extracting features for train and test data using TfIdfVectorizer
 
@@ -152,10 +158,14 @@ def LoadData_and_ExtractFeatures(df):
     X_test_extracted_features = vectorizer.transform(X_test)
     duration_test = time() - t0
 
+    feature_names = vectorizer.get_feature_names_out()
+
     #print(f"{len(X_train)} documents (training set)")   # FOR DEBUG
     #print(f"{len(X_test)} documents (testing set)")     # FOR DEBUG
     #print("Vectorise training done: %f" % duration_train ," seconds")  #FOR DEBUG
     #print("Vectorise testing done: %f" % duration_test ," seconds")  #FOR DEBUG
+
+    return X_train_extracted_features, X_test_extracted_features, y_train, y_test
 
 
 
