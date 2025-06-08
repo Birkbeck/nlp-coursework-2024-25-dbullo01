@@ -4,7 +4,9 @@ import pandas as pd
 from IPython.display import display
 import numpy as np
 from pathlib import Path
-
+from time import time
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
 
 # Part Two - Feature Extraction and Classification
 
@@ -17,14 +19,14 @@ from pathlib import Path
 
 
 def read_speeches(path=Path.cwd() / "texts" / "speeches"):
-    """Reads speeches (csv text file) located as a specified path and does some preprocessing and returns dimensiosn of
+    """Reads speeches (csv text file) located as a specified path and does some preprocessing and returns dimensions of
        pandas datafrome containing the speeches data
        Requires a path to folder location where the speech text CSV file is located.
 
         Args:
             path (str): path location to the folder containing speeches text files to preprocess.
         Returns:
-            pandas dataframe.shape: dimensions of pandas dataframe using pandas dataframe.shape
+            pandas dataframe: pandas dataframe containing pre-processed speeches data
     """
 
     # (a) Read the handsard40000.csv dataset in the texts directory into a dataframe. Subset and rename the dataframe
@@ -90,13 +92,70 @@ def read_speeches(path=Path.cwd() / "texts" / "speeches"):
     #display(df) - PLEASE UNCOMMENT FOR DISPLAY/DEBUG
 
 
-    # Return the dimensions of the resulting dataframe using the shape method
+    # Print the dimensions of the resulting dataframe using the shape method  [DONE]
     #REF https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.shape.html
-    return df.shape
+    print(df.shape)
+    return df
 
 
 
+def LoadData_and_ExtractFeatures(df):
+    # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
+    # omitting English stopwords and setting max_features to 3000. Split the data into a train and test set, using
+    # stratified sampling, with a random seed of 26      [DONE]
+    # REF https://code.likeagirl.io/good-train-test-split-an-approach-to-better-accuracy-91427584b614 for the types of
+    # train test splits
+    # REF https://builtin.com/data-science/train-test-split#:~:text=Stratified%20Splitting&text=This%20creates%20training%20and%20testing,categories%20aren't%20represented%20equally.
+    # for what stratified sampling means
+    # REF https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
+    # for parameters and their defaults and what max_features and stratified means
 
+    """Load data
+
+        Args:
+             df: pandas dataframe containing x (data) and y (labels)
+        Returns:
+             none
+    """
+    # Checking the columns exist in the dataframe
+    # display(df.columns) #FOR DEBUG
+
+    #Split the dataframe data intothe required  x (data) and y (target labels)
+    X = df['speech']
+    y = df['party']
+
+    #display(X)  # FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO iNSPECT DATA ('speech)
+    #display(y)  # FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO iNSPECT LABELS DATA ('party')
+
+    # Split the X (speeches) and y (party labels) data into training set 75% and 25% for testing set
+    # using stratifIed sampling, max_features set to 3000,
+    # Where: max features means, if not None, is used to build a vocabulary that considers the top max_features
+    # ordered by term frequency across the corpus. Otherwise, all features are used (taken from
+    # TfidVectorizer scikit learn online help pages)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=26, stratify=y)
+
+    #REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html for examples
+    # of extracting features for train and test data using TfIdfVectorizer
+
+    # Extracting features using a sparse vectorizer TfIdf
+    t0 = time()
+    vectorizer = TfidfVectorizer(
+        max_features=3000,
+        stop_words="english"
+    )
+    X_train_extracted_features = vectorizer.fit_transform(X_train)
+    duration_train = time() - t0
+
+    # Extracting features from the test data using the same vectorizer
+    t0 = time()
+    X_test_extracted_features = vectorizer.transform(X_test)
+    duration_test = time() - t0
+
+    #print(f"{len(X_train)} documents (training set)")   # FOR DEBUG
+    #print(f"{len(X_test)} documents (testing set)")     # FOR DEBUG
+    #print("Vectorise training done: %f" % duration_train ," seconds")  #FOR DEBUG
+    #print("Vectorise testing done: %f" % duration_test ," seconds")  #FOR DEBUG
 
 
 
@@ -104,6 +163,6 @@ if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
     """
-    # Print the dimensions of the resulting dataframe using the shape method [DONE]
-    dimensions = read_speeches(path=Path.cwd() / "texts" / "speeches")
-    print(str(dimensions))
+
+    df = read_speeches(path=Path.cwd() / "texts" / "speeches")
+    LoadData_and_ExtractFeatures(df)
