@@ -10,18 +10,29 @@ from pathlib import Path
 
 # In the second part of the coursework, your task is to train and test machine learning classifiers on a dataset of
 # political speeches. The objective is to learn to predict the political party from the text of the speech. The texts you
-# need for this part are in the speeches sub-directory of the texts directory of the coursework. Moodle template.
+# need for this part are in the speeches subdirectory of the texts directory of the coursework. Moodle template.
 # For this part, you can structure your python functions in any way that you like, but pay attention to exactly what
 # information (if any) you are asked to print out in each part. Your final scripts should print out the answers to each
 # part where required, and nothing else
 
 
-def read_speeches(path=Path.cwd() / "texts" / "novels"):
+def read_speeches(path=Path.cwd() / "texts" / "speeches"):
+    """Reads speeches (csv text file) located as a specified path and does some preprocessing and returns dimensiosn of
+       pandas datafrome containing the speeches data
+       Requires a path to folder location where the speech text CSV file is located.
 
-    # (a) Read the handsard40000.csv dataset in the texts directory into a dataframe. Subset and rename the dataframe as follows;
+        Args:
+            path (str): path location to the folder containing speeches text files to preprocess.
+        Returns:
+            pandas dataframe.shape: dimensions of pandas dataframe using pandas dataframe.shape
+    """
+
+    # (a) Read the handsard40000.csv dataset in the texts directory into a dataframe. Subset and rename the dataframe
+    # as follows;
     # REF https://pandas.pydata.org/docs/reference/api/pandas.set_option.html
     df = pd.read_csv(path/"hansard40000.csv")
     # print(df)  #PLEASE UNCOMMENT IF YOU WOULD LIKE TO DISPLAY DATAFRAME
+
 
     pd.set_option('display.max_columns', None)      # Display all columns. None - unlimited
     pd.set_option('display.max_rows', None)         # Display all rows. None - unlimited
@@ -33,8 +44,8 @@ def read_speeches(path=Path.cwd() / "texts" / "novels"):
     df['party'] = df['party'].replace('Labour (Co-op)', 'Labour')
     # display(df) #PLEASE UNCOMMENT IF YOU WOULD LIKE TO DISPLAY DATAFRAME
 
-    # (ii) remove any rows where the value of the 'party' column is not one of the four most common party names and remove
-    #       the 'Speaker' value. [DONE]
+    # (ii) remove any rows where the value of the 'party' column is not one of the four most common party names and
+    # remove the 'Speaker' value. [DONE]
 
     # Get the frequency counts of each party
     #REF https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.value_counts.html
@@ -82,6 +93,31 @@ def read_speeches(path=Path.cwd() / "texts" / "novels"):
     # Return the dimensions of the resulting dataframe using the shape method
     #REF https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.shape.html
     return df.shape
+
+
+
+def ExtractFeatures():
+    # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
+    # omitting English stopwords and setting max_features to 3000. Split the data into a train and test set, using
+    # stratified sampling, with a random seed of 26
+    """Extracts features
+
+        Args:
+
+        Returns:
+
+    """
+
+
+
+
+
+
+
+
+    pass
+
+
 
 if __name__ == "__main__":
     """
