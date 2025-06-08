@@ -96,26 +96,7 @@ def read_speeches(path=Path.cwd() / "texts" / "speeches"):
 
 
 
-def ExtractFeatures():
-    # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
-    # omitting English stopwords and setting max_features to 3000. Split the data into a train and test set, using
-    # stratified sampling, with a random seed of 26
-    """Extracts features
 
-        Args:
-
-        Returns:
-
-    """
-
-
-
-
-
-
-
-
-    pass
 
 
 
