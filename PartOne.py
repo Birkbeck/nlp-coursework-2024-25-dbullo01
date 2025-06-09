@@ -9,11 +9,29 @@ import pandas as pd
 import spacy
 from IPython.display import display
 import pickle
-
+import re                                   # for regular expressions
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
 nlp = spacy.load("en_core_web_sm")
 nlp.max_length = 2000000
+
+
+
+def light_clean_text(text):
+    """Returns lightly cleaned text where multiple spaces are removed including '\n'.
+        Requires text to clean
+
+        Args:
+            text (str): The text to lighty clean.
+
+        Returns:
+            str: The text that has been lightly cleaned
+        """
+    # light clean as need to look at syntax and style in (e) and (f) hence need to preserve linguistic structure -
+    # Chose to only remove extra white space and '\n' from text to preserve linguistic structure
+    text = ' '.join(text.split())
+
+    return text
 
 
 
@@ -115,12 +133,15 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
             afile.close()  # close the file when you're done
 
 
+    for x in data:
+        data_clean.append(light_clean_text(x))
+
     #print(title)  #FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE THE LIST VALUES FOR TITLE
     #print(author) #FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE THE LIST VALUES FOR AUTHOR
     #print(year)   #FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE THE LIST VALUES FOR YEAR
 
     data = {
-       "text": data,
+       "text": data_clean,
        "title": title,
        "author": author,
        "year": year
@@ -131,6 +152,7 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
     pd.set_option('display.max_columns', None)  # Display all columns. None - unlimited
     pd.set_option('display.max_rows', None)   # Display all rows. None - unlimited
     pd.set_option('display.width', None)   # Display width in characters for pandas. None - auto-detects width
+
 
     return df
 
@@ -153,9 +175,6 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     # A doc object in spaCy is created using doc = nlp("This is a text") and nlp is a function
     # Apply nlp function to speech text rows and store doc object for each text in new dataframe column called
     # DocObject
-
-    
-
 
 
     # ii. Serialise the resulting dataframe (i.e. write it out to disk) using the pickle format [DONE]
@@ -267,8 +286,8 @@ if __name__ == "__main__":
     print(df.head())
     #nltk.download("cmudict")
     parse(df)
-    #print(df.head())
-    #print(get_ttrs(df))
+    print(df.head())
+    print(get_ttrs(df))
     #print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     # print(adjective_counts(df))
