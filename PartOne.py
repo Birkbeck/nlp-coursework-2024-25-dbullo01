@@ -166,15 +166,21 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     the resulting  DataFrame to a pickle file"""
 
     # i. Use the spaCy nlp method to add a new column to the dataframe that contains parse and tokenized Doc objects for
-    #    each text [TO DO]
+    #    each text [DONE]
     #REF - https: // spacy.io / usage / processing - pipelines  # processing to understand spaCy docs
     #REF - https: // pandas.pydata.org / docs / getting_started / intro_tutorials / 05_add_columns.html
     #REF - https://docs.python.org/3/library/pickle.html#examples   to pickle to a file and load from pickle file
+    #REF - https://spacy.io/usage/spacy-101 for info on nlp
+    #REF - https://realpython.com/natural-language-processing-spacy-python/#dependency-parsing-using-spacy
 
     # Need to access text column from dataframe that contains the novels text and create doc object for each text.
     # A doc object in spaCy is created using doc = nlp("This is a text") and nlp is a function
-    # Apply nlp function to speech text rows and store doc object for each text in new dataframe column called
-    # DocObject
+    # Apply nlp function to novel text rows and store doc object for each text in new dataframe column called
+    # 'Doc'
+
+    df['doc'] = df['text'].apply(nlp)
+    #print(type(df['doc'][0]))   #TEST - To see if a value in doc column is of spacy Doc type
+    #print(df['doc'].values[0])  #TEST - Get first doc column value
 
 
     # ii. Serialise the resulting dataframe (i.e. write it out to disk) using the pickle format [DONE]
@@ -183,7 +189,7 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
         pickle.dump(df, file)
 
     # iii. Return the dataframe  [DONE]
-    display(df)
+    print(df)
 
     # iv. Load the dataframe from the pickle file and use it for the remainder of this coursework part. [TO ALTER WHEN i is done]
     #     Note: one or more of the texts may exceed the default meximum length for spaCy's model. You will need to either
@@ -193,12 +199,12 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
         # The protocol version used is detected automatically
         df = pickle.load(file)
 
-    display(df)
+    #display(df) FOR DEBUG
 
     return df
 
 
-#(b) nltk_trr: This function should return a dictionary mapping the title of each novel to its type-token ratio.
+#(b) nltk_ttr: This function should return a dictionary mapping the title of each novel to its type-token ratio.
 # Tokenize the text using the NLTK library only. Do not include punctuation as tokens, and ignore case when counting
 # types
 
