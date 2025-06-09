@@ -4,17 +4,22 @@ import string
 from pathlib import Path
 import nltk
 from nltk.tokenize import word_tokenize
+from nltk.tokenize import sent_tokenize
 import pandas as pd
 import spacy
+from IPython.display import display
+import pickle
+
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
 nlp = spacy.load("en_core_web_sm")
 nlp.max_length = 2000000
 
 
-# (c) flesch_kincaid: This function should return a dictionary mapping the title of each novel to its type-token ratio.
-# Tokenize the text string using the NLTK library only. Do not include punctuation as tokens, and ignore case when
-# counting types
+
+# (c) flesch_kincaid: This function should return a dictionary mapping the title of each novel to the Flesch-Kincaid
+# reading grade level score of the text. Use thr NLTK library for tokenization and the CMU pronouncing dictionary
+# for estimating syllable counts
 
 def fk_level(text, d):
     """Returns the Flesch-Kincaid Grade Level of a text (higher grade is more difficult).
@@ -27,6 +32,12 @@ def fk_level(text, d):
     Returns:
         float: The Flesch-Kincaid Grade Level of the text. (higher grade is more difficult)
     """
+    # REF - https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests for Flesch-Kincaid Grade level formula
+    # Formula;
+    # FK_grade_level_score = 0.39 * (total_words/total_sentences) + 11.8 * (total_syllables/total_words) - 15.59
+
+
+
     pass
 
 
@@ -124,16 +135,53 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
     return df
 
 
+  # (e) parse: The goal of this function is to process the texts with spaCy's tokenizer and parser, and store the
+    #    processed texts. Your completed function should:
+    # i. Use the spaCy nlp method to add a new column to the dataframe that contains parse and tokenized Doc objects for
+    #    each text
 def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     """Parses the text of a DataFrame using spaCy, stores the parsed docs as a column and writes 
     the resulting  DataFrame to a pickle file"""
-    pass
+
+    # i. Use the spaCy nlp method to add a new column to the dataframe that contains parse and tokenized Doc objects for
+    #    each text [TO DO]
+    #REF - https: // spacy.io / usage / processing - pipelines  # processing to understand spaCy docs
+    #REF - https: // pandas.pydata.org / docs / getting_started / intro_tutorials / 05_add_columns.html
+    #REF - https://docs.python.org/3/library/pickle.html#examples   to pickle to a file and load from pickle file
+
+    # Need to access text column from dataframe that contains the novels text and create doc object for each text.
+    # A doc object in spaCy is created using doc = nlp("This is a text") and nlp is a function
+    # Apply nlp function to speech text rows and store doc object for each text in new dataframe column called
+    # DocObject
+
+    
+
+
+
+    # ii. Serialise the resulting dataframe (i.e. write it out to disk) using the pickle format [DONE]
+    store_path = os.path.join(store_path,  out_name)
+    with open(store_path +'.pkl', 'wb') as file:
+        pickle.dump(df, file)
+
+    # iii. Return the dataframe  [DONE]
+    display(df)
+
+    # iv. Load the dataframe from the pickle file and use it for the remainder of this coursework part. [TO ALTER WHEN i is done]
+    #     Note: one or more of the texts may exceed the default meximum length for spaCy's model. You will need to either
+    #     increase this length of parse the text in sections
+
+    with open(store_path + '.pkl', 'rb') as file:
+        # The protocol version used is detected automatically
+        df = pickle.load(file)
+
+    display(df)
+
+    return df
 
 
 #(b) nltk_trr: This function should return a dictionary mapping the title of each novel to its type-token ratio.
 # Tokenize the text using the NLTK library only. Do not include punctuation as tokens, and ignore case when counting
 # types
-
 
 def nltk_ttr(text):
     """Calculates the type-token ratio of a text. Text is tokenized using nltk.word_tokenize.
@@ -219,8 +267,8 @@ if __name__ == "__main__":
     print(df.head())
     #nltk.download("cmudict")
     parse(df)
-    print(df.head())
-    print(get_ttrs(df))
+    #print(df.head())
+    #print(get_ttrs(df))
     #print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     # print(adjective_counts(df))
