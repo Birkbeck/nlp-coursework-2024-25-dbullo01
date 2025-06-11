@@ -11,6 +11,7 @@ from IPython.display import display
 import pickle
 import re                                   # for regular expressions
 import cmudict
+cmu_dict = cmudict.dict()
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
 nlp = spacy.load("en_core_web_sm")
@@ -51,7 +52,28 @@ def fk_level(text, d):
     Returns:
         float: The Flesch-Kincaid Grade Level of the text. (higher grade is more difficult)
     """
-    pass
+    # REF - https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests for Flesch-Kincaid Grade level formula
+    # Formula;
+    # FK_grade_level_score = 0.39 * (total_no_of_words/total_no_of_sentences) + 11.8 * (total_syllables/total_no_of_words) - 15.59
+
+    words = word_tokenize(text)
+    sentences = sent_tokenize(text)
+    total_no_of_words = len(words)
+    total_no_of_sentences = len(sentences)
+
+    total_no_of_syllables = 0
+    #check if each word is in dictionary and get no of syllables for word by calling count_syl() function
+    d = cmudict.dict()
+    for word in words:
+        no_of_syllables = count_syl(word,d)
+        total_no_of_syllables = total_no_of_syllables + no_of_syllables
+
+    FK_grade_level_score = 0.39 * (total_no_of_words/total_no_of_sentences) + 11.8 * (total_no_of_syllables/total_no_of_words) -  15.59
+
+    return FK_grade_level_score
+
+
+
 
 
 def count_syl(word, d):
@@ -69,16 +91,15 @@ def count_syl(word, d):
     word = word.lower()
     isWordInDictionary = False
     no_of_syllables_in_word = 0
-
-    if word in d.keys():
+    if d.get(word):
         isWordInDictionary=True
         #get the value (syllables) for key (word)
-
-        syllables = (d[word])
-        #get no of syllables in word
-        no_of_syllables_in_word = sum([len(syllables) for syllables in d[word]])
-        print("Syllables %s" % syllables) # FOR DEBUG
-        print("No of Syllables in word %d" % no_of_syllables_in_word)
+        phonemes = d.get(word)
+        #get no of syllables in word (only using first sublist for a word returned from cmudict as not counting syllables for each accent for a word)
+        no_of_syllables_in_word = sum(1 for phoneme in phonemes[0] if phoneme[-1].isdigit())  # -1 identifies the phoneme(s) ending in a number which indicates they are vowels and thus syllable(s)
+        ###print(word) #FOR DEBUG
+        ###print("available phonemes for word : %s" % phonemes) # FOR DEBUG
+        ###print("No of Syllables in word %d" % no_of_syllables_in_word)  #FOR DEBUG
     else:
         #determine no of vowel clusters (for word that is in not in cmu dictionary)
         isWordInDictionary=False
@@ -90,11 +111,14 @@ def count_syl(word, d):
         # finding all vowel_clusters of size 1 or more (in a word) as a word in English has at least one vowel
         vowel_clusters.append(re.findall(r'[aeiou]{1,}', word))
         no_of_vowel_clusters = sum([len(vowel_cluster) for vowel_cluster in vowel_clusters])
-        print(vowel_clusters)
-        print("no of vowel_clusters:", no_of_vowel_clusters)
+        ###print(word)  #FOR DEBUG
+        ###print(vowel_clusters)   # FOR DEBUG
+        ###print("no of vowel_clusters:", no_of_vowel_clusters) #FOR DEBUG
         no_of_syllables_in_word = no_of_vowel_clusters
 
-    return no_of_syllables_in_word, isWordInDictionary
+    return no_of_syllables_in_word
+
+
 
 
 
@@ -317,17 +341,9 @@ if __name__ == "__main__":
     parse(df)
     print(df.head())
     print(get_ttrs(df))
-    #print(get_fks(df))
+    print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     # print(adjective_counts(df))
-
-    #word = "bytecode"
-    word = "special"
-    d = cmudict.dict()
-    no_of_syllables_in_word, isWordInDictionary = count_syl(word, d)
-    print(no_of_syllables_in_word,isWordInDictionary)
-
-
     """ 
     for i, row in df.iterrows():
         print(row["title"])
