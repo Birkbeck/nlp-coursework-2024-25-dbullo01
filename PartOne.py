@@ -12,6 +12,7 @@ import pickle
 import re                                   # for regular expressions
 import cmudict
 cmu_dict = cmudict.dict()
+from collections import Counter
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
 nlp = spacy.load("en_core_web_sm")
@@ -323,9 +324,42 @@ def subjects_by_verb_count(doc, verb):
 
 
 
+#(f) Working with parses: the final lines of the code remplate contains three for loops. Write the functions needed to
+#    complete these loops so that the print:
+#   (i) The title of each novel and a list of the ten most common syntactic objects overall in the text
+
 def adjective_counts(doc):
     """Extracts the most common adjectives in a parsed document. Returns a list of tuples."""
-    pass
+    """
+        Args:
+            doc:  SpaCy doc (text tokenized and parsed)
+        Returns:
+            itemList (list): containing "title" of document as string and  list of tuples where each tuple is Syntactic 
+            Object and freq count for that syntactic object in the given text.
+    """
+
+    itemList = []
+
+    #counting syntactic objects
+    syntactic_objects = Counter()
+
+    for title, doc in zip(df['title'],df['doc']):
+        for token in doc:
+            if token.dep_:
+                #count each type of syntactic object in doc
+                syntactic_objects[token.dep_] += 1
+                #sort syntactic objects freq counts by value in list
+        #REF https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
+        ls = sorted(syntactic_objects.items(), key=lambda x: x[1], reverse=True)
+
+        #Get the most common syntactic objects for each title and store both the title and list of syntactic objects
+        # (for that title) in a list
+        #itemList.append([title,ls[:10]])
+        itemList.append([title, ls[:10]])
+        #Reset the counter for the next text file (SpaCy doc)
+        syntactic_objects = Counter()
+
+    return itemList
 
 
 
@@ -343,7 +377,8 @@ if __name__ == "__main__":
     print(get_ttrs(df))
     print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
-    # print(adjective_counts(df))
+    df = pd.read_pickle(Path.cwd() / "pickles" /"parsed.pickle.pkl")
+    print(adjective_counts(df))
     """ 
     for i, row in df.iterrows():
         print(row["title"])
