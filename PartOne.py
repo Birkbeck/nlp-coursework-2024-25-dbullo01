@@ -107,8 +107,8 @@ def count_syl(word, d):
         no_of_syllables_in_word = 0
         vowelphoneme_count = 0
         for phoneme in pronounciations_for_the_word_from_cmddict[0]:
-            #checking each phonem in pronouciation is a vowel phoneme (syllable) i.e phoneme countains a digit
-            #as it last character
+            #checking each phoneme in pronouciation is a vowel phoneme (syllable) i.e phoneme countains a digit
+            #as it's last character
             if phoneme[-1].isdigit():
                 vowelphoneme_count = vowelphoneme_count + 1
         no_of_syllables_in_word = vowelphoneme_count
@@ -124,6 +124,7 @@ def count_syl(word, d):
         #fd = nltk.FreqDist(re.findall(r'[aeiou]{1,}', word))  #FOR DEBUG - Shows freq counts of each unique vowel cluster
         #print(fd.items())
         # finding all vowel_clusters of size 1 or more (in a word) as a word in English has at least one vowel
+        # as any word not in cmudict should always have at least one vowel
         vowel_clusters.append(re.findall(r'[aeiou]{1,}', word))
         no_of_vowel_clusters = sum([len(vowel_cluster) for vowel_cluster in vowel_clusters])
         ###print(word)  #FOR DEBUG
