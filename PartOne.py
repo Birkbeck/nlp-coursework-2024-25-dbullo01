@@ -88,22 +88,36 @@ def count_syl(word, d):
     Returns:
         int: The number of syllables in the word.
     """
+    #REF https://stackoverflow.com/questions/49581705/using-cmudict-to-count-syllables
     # Check if word (key value) is in dictionary
     word = word.lower()
-    isWordInDictionary = False
     no_of_syllables_in_word = 0
     if d.get(word):
-        isWordInDictionary=True
-        #get the value (syllables) for key (word)
-        phonemes = d.get(word)
-        #get no of syllables in word (only using first sublist for a word returned from cmudict as not counting syllables for each accent for a word)
-        no_of_syllables_in_word = sum(1 for phoneme in phonemes[0] if phoneme[-1].isdigit())  # -1 identifies the phoneme(s) ending in a number which indicates they are vowels and thus syllable(s)
+        #get the value (syllables) for key (word) found in cmudict
+        pronounciations_for_the_word_from_cmddict = d.get(word)
+
+        #get no of syllables in word using first sublist (i.e first pronounciation for a word as there could be more than one pronounciation for a word)
+        #for a word returned from cmudict as not counting syllables for each accent for a word)
+
+        #print("pronounciation(s) for word: ", pronounciations_for_the_word_from_cmddict)  #FOR DEBUG
+
+        #Search each phoneme in pronounciation to find vowel phoneme(s0 (syllables) i.e has a digit as a last character
+        #Decided only need to check for vowel phonemes (syllables) in  the first instance of a pronounciation for a workd where two or more may exist
+
+        no_of_syllables_in_word = 0
+        vowelphoneme_count = 0
+        for phoneme in pronounciations_for_the_word_from_cmddict[0]:
+            #checking each phonem in pronouciation is a vowel phoneme (syllable) i.e phoneme countains a digit
+            #as it last character
+            if phoneme[-1].isdigit():
+                vowelphoneme_count = vowelphoneme_count + 1
+        no_of_syllables_in_word = vowelphoneme_count
+
         ###print(word) #FOR DEBUG
         ###print("available phonemes for word : %s" % phonemes) # FOR DEBUG
-        ###print("No of Syllables in word %d" % no_of_syllables_in_word)  #FOR DEBUG
+        #print("No of Syllables in word %d" % no_of_syllables_in_word)  #FOR DEBUG
     else:
         #determine no of vowel clusters (for word that is in not in cmu dictionary)
-        isWordInDictionary=False
         vowel_clusters=[]
         no_of_syllables_in_word = 0
         # REF https://www.nltk.org/book_1ed/ch03.html     # Section 3.5 Useful Applications of Regular Expressions
@@ -329,8 +343,8 @@ def subjects_by_verb_count(doc, verb):
 #    complete these loops so that they print:
 #   (i) The title of each novel and a list of the ten most common syntactic objects overall in the text
 
-def adjective_counts(doc):
-    """Extracts the most common adjectives in a parsed document. Returns a list of tuples."""
+def syntactic_objects_counts(doc):
+    """Extracts the ten most common syntactic objects in a parsed document. Returns a list of tuples."""
     """
         Args:
             doc:  SpaCy doc (text tokenized and parsed)
@@ -344,6 +358,7 @@ def adjective_counts(doc):
     #counting syntactic objects
     syntactic_objects = Counter()
 
+    #Using zip to get title and doc from dataframe (in each row of title and doc dataframe columns)
     for title, doc in zip(df['title'],df['doc']):
         for token in doc:
             if token.dep_:
@@ -353,7 +368,7 @@ def adjective_counts(doc):
         #REF https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
         ls = sorted(syntactic_objects.items(), key=lambda x: x[1], reverse=True)
 
-        #Get the most common syntactic objects for each title and store both the title and list of syntactic objects
+        #Get the ten most common syntactic objects for each title and store both the title and list of syntactic objects
         # (for that title) in a list
         itemList.append([title, ls[:10]])
         #Reset the counter for the next text file (SpaCy doc)
@@ -378,7 +393,7 @@ if __name__ == "__main__":
     print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     df = pd.read_pickle(Path.cwd() / "pickles" /"parsed.pickle.pkl")
-    print(adjective_counts(df))
+    print(syntactic_objects_counts(df))
     """ 
     for i, row in df.iterrows():
         print(row["title"])
