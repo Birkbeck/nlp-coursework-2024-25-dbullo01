@@ -209,6 +209,7 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
     #    processed texts. Your completed function should:
     # i. Use the spaCy nlp method to add a new column to the dataframe that contains parse and tokenized Doc objects for
     #    each text
+
 def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     """Parses the text of a DataFrame using spaCy, stores the parsed docs as a column and writes 
     the resulting  DataFrame to a pickle file"""
@@ -324,8 +325,8 @@ def subjects_by_verb_count(doc, verb):
 
 
 
-#(f) Working with parses: the final lines of the code remplate contains three for loops. Write the functions needed to
-#    complete these loops so that the print:
+#(f) Working with parses: the final lines of the code template contains three for loops. Write the functions needed to
+#    complete these loops so that they print:
 #   (i) The title of each novel and a list of the ten most common syntactic objects overall in the text
 
 def adjective_counts(doc):
@@ -354,7 +355,6 @@ def adjective_counts(doc):
 
         #Get the most common syntactic objects for each title and store both the title and list of syntactic objects
         # (for that title) in a list
-        #itemList.append([title,ls[:10]])
         itemList.append([title, ls[:10]])
         #Reset the counter for the next text file (SpaCy doc)
         syntactic_objects = Counter()
