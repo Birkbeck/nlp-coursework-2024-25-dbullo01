@@ -365,13 +365,8 @@ def syntactic_objects_counts(doc):
             if token.dep_:
                 #count each type of syntactic object in doc
                 syntactic_objects[token.dep_] += 1
-                #sort syntactic objects freq counts by value in list
-        #REF https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-        ls = sorted(syntactic_objects.items(), key=lambda x: x[1], reverse=True)
-
         #Get the ten most common syntactic objects for each title and store both the title and list of syntactic objects
-        # (for that title) in a list
-        itemList.append([title, ls[:10]])
+        itemList.append([title, syntactic_objects.most_common(10)])
         #Reset the counter for the next text file (SpaCy doc)
         syntactic_objects = Counter()
 
