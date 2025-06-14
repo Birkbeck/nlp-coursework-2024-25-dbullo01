@@ -136,8 +136,6 @@ def count_syl(word, d):
 
 
 
-
-
 #(a) read_novels: Each file in the novels directory contains the text of a novel,and the name of the file is the
 #    title, author, and year of publication of the novel, separated by hyphens. Complete the python function read_texts
 #    to do the following:
@@ -242,7 +240,7 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     # Apply nlp function to novel text rows and store doc object for each text in new dataframe column called
     # 'Doc'
 
-    df['doc'] = df['text'].apply(nlp)
+    df['parsed'] = df['text'].apply(nlp)
     #print(type(df['doc'][0]))   #TEST - To see if a value in doc column is of spacy Doc type
     #print(df['doc'].values[0])  #TEST - Get first doc column value
 
@@ -336,6 +334,26 @@ def subjects_by_verb_pmi(doc, target_verb):
 
 def subjects_by_verb_count(doc, verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
+
+    itemList = []
+
+    # counting syntactic subjects
+    syntactic_subjects = Counter()
+
+    # Using zip to get title and doc from dataframe (in each row of title and doc dataframe columns)
+    for title, doc in zip(df['title'], df['parsed']):
+        for token in doc:
+            if token.pos_ == "VERB" and token.lemma_ == "to hear":
+                # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to other words in the text
+                # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy
+                if token.dep_ == "nsubj" | token.dep_ == "" | token.dep == "" or token.dep == "":
+                    print(token.text, token.dep_, token.head.text, token.pos_)  #FOR DEBUG
+                    syntactic_subjects[token.text, token.lemma_] += 1
+
+    # printing the 10 most common syntactic subjects for the verb "to hear" in the text
+    print("10 MOST COMMON SYNTACTIC SUBJECTS")
+    print(syntactic_subjects.most_common(10))
+
     pass
 
 
