@@ -100,6 +100,40 @@ def read_speeches(path=Path.cwd() / "texts" / "speeches"):
     print(df.shape)
     return df
 
+def LoadData(df):
+    """Load data
+
+          Args:
+             df: pandas dataframe containing data to create x (data) and y (labels)
+          Returns:
+             X_train: training data
+             X_test:  testing data
+             y_train:  labels training data
+             y_test:  labels testing data
+             features_names:
+      """
+
+    # Checking the columns exist in the dataframe
+    # display(df.columns) #FOR DEBUG
+
+    # Split the dataframe data into the required  x (data) and y (target labels)
+    X = df['speech']
+    y = df['party']
+
+    # display(X)  # FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO iNSPECT DATA ('speech)
+    # display(y)  # FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO iNSPECT LABELS DATA ('party')
+
+    # Split the X (speeches) and y (party labels) data into training set 75% and 25% for testing set
+    # using stratifIed sampling, max_features set to 3000,
+    # Where: max features means, if not None, is used to build a vocabulary that considers the top max_features
+    # ordered by term frequency across the corpus. Otherwise, all features are used (taken from
+    # TfidVectorizer scikit learn online help pages)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=26, stratify=y)
+    return X_train, X_test, y_train, y_test
+
+
+
 
 def LoadData_and_ExtractFeatures(df):
     # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
@@ -175,8 +209,16 @@ def LoadData_and_ExtractFeatures(df):
 
 if __name__ == "__main__":
     """
-    uncomment the following lines to run the functions once you have completed them
-    """
+        uncomment the following lines to run the functions once you have completed them  - (4 min approx to run)
+        """
 
     df = read_speeches(path=Path.cwd() / "texts" / "speeches")
-    LoadData_and_ExtractFeatures(df)
+
+    print("")
+    # print("Loading Data and Feature Extraction using TfidfVectorizer")
+    print("Loading Data")
+    print("")
+    X_train, X_test, y_train, y_test = LoadData(df)
+
+
+    #LoadData_and_ExtractFeatures(df)
