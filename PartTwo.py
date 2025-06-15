@@ -11,7 +11,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils.extmath import density
 from sklearn.metrics import classification_report
 from sklearn.metrics import f1_score
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import LinearSVC
 
 # Part Two - Feature Extraction and Classification
 
@@ -253,6 +254,37 @@ def benchmark_classification_models(classifier, classifier_name, X_train, y_trai
     return classifier_descr, macro_average_f1_score, training_duration_time, testing_duration_time
 
 
+def classifier_pipeline(X_train, y_train, X_test, y_test):
+    """benchmark classification model(s)
+
+                Args:
+                    X_train:
+                    y_train:
+                    X_test:
+                    y_test:
+
+                Returns:
+                    class_report:
+                    training_duration_time:
+                    testing_duration_time:
+        """
+    #REF https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
+    #https://stackoverflow.com/questions/31677218/scikit-f-score-metric-error?rq=3
+    #https://stackoverflow.com/questions/43162506/undefinedmetricwarning-f-score-is-ill-defined-and-being-set-to-0-0-in-labels-wi?rq=1
+
+    classification_results = []
+    for classifier, classifier_name in (
+        (RandomForestClassifier(n_estimators=300,class_weight="balanced"),"Random Forest"),
+        (LinearSVC(C=0.1, dual=False, max_iter=10000,class_weight="balanced"), "Linear SVC"),
+    ):
+        print("=" * 80)
+        print(classifier_name)
+        classification_results.append(benchmark_classification_models(classifier,classifier_name,X_train, y_train, X_test, y_test))
+
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -275,8 +307,10 @@ if __name__ == "__main__":
                                                                                                             X_test,
                                                                                                             y_train,
                                                                                                             y_test)
-
-
+    print("")
+    print("Training classification models")
+    print("")
+    classifier_pipeline(X_train_extracted_features, y_train, X_test_extracted_features, y_test)
 
 
 
