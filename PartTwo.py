@@ -1,6 +1,4 @@
 
-
-
 import pandas as pd
 from IPython.display import display
 import numpy as np
@@ -139,8 +137,6 @@ def LoadData(df):
     return X_train, X_test, y_train, y_test
 
 
-
-  ##def LoadData_and_ExtractFeatures(df):
 def ExtractFeatures(X_train, X_test, y_train, y_test):
     # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
     # omitting English stopwords and setting max_features to 3000. Split the data into a train and test set, using
@@ -258,13 +254,11 @@ def ExtractFeatures_bi_grams(df):
         return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
 
-
 # (c) Train RandomForest (with n_estimators=300) and SVM with linear kernel classifiers on the training set,
     # and print the scikit-learn macro-average f1 score and classification report for each classifier on the test set.
     # The label that you are trying to predict is the 'party' value
     # REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html tutorial Week 5 lab
     # REF https://iamirmasoud.com/2022/06/19/understanding-micro-macro-and-weighted-averages-for-scikit-learn-metrics-in-multi-class-classification-with-example/
-
 
 def benchmark_classification_models(classifier, classifier_name, X_train, y_train, X_test, y_test):
     """benchmark classification model(s)
@@ -420,9 +414,7 @@ def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
     #)
     #print(f"Accuracy on test set: {test_accuracy:.3f}")
 
-
     return
-
 
 
 
@@ -451,8 +443,6 @@ if __name__ == "__main__":
     print("")
     classifier_pipeline(X_train_extracted_features, y_train, X_test_extracted_features, y_test)
 
-
-
     print("")
     print("")
     print("Hyperparameter tuning for the LinearSVC and TfidfVectorizer (vectoriser)")
@@ -469,6 +459,3 @@ if __name__ == "__main__":
     print("Training classification models")
     print("")
     classifier_pipeline(X_train_extracted_features2, y_train2, X_test_extracted_features2, y_test2)
-
-
-    #LoadData_and_ExtractFeatures(df)
