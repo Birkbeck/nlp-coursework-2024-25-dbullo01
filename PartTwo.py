@@ -8,7 +8,9 @@ from pathlib import Path
 from time import time
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-
+from sklearn.utils.extmath import density
+from sklearn.metrics import classification_report
+from sklearn.metrics import f1_score
 
 
 # Part Two - Feature Extraction and Classification
@@ -191,11 +193,72 @@ def ExtractFeatures(X_train, X_test, y_train, y_test):
 
     return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
+# (c) Train RandomForest (with n_estimators=300) and SVM with linear kernel classifiers on the training set,
+    # and print the scikit-learn macro-average f1 score and classification report for each classifier on the test set.
+    # The label that you are trying to predict is the 'party' value
+    # REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html tutorial Week 5 lab
+    # REF https://iamirmasoud.com/2022/06/19/understanding-micro-macro-and-weighted-averages-for-scikit-learn-metrics-in-multi-class-classification-with-example/
+
+
+def benchmark_classification_models(classifier, classifier_name, X_train, y_train, X_test, y_test):
+    """benchmark classification model(s)
+
+            Args:
+                classifier:
+                X_train:
+                y_train:
+                X_test:
+                y_test:
+
+            Returns:
+                class_report:
+                training_duration_time:
+                testing_duration_time:
+    """
+
+    print("y_train n_samples :", pd.DataFrame(y_train).shape[0])  #FOR DEBUG
+    print("Y_train n_features:", pd.DataFrame(y_train).shape[1])  #FOR DEBUG
+
+
+    print("Training ", classifier)
+    t0 = time()
+    classifier.fit(X_train,y_train)
+    training_duration_time = time() - t0
+
+    t0 = time()
+    predictions = classifier.predict(X_test)
+    testing_duration_time = time() - t0
+
+
+    class_report = classification_report(y_test,predictions, zero_division=0)
+    macro_average_f1_score = f1_score(y_test, predictions,average="macro", zero_division=0)
+    print("classification report:")
+    print(class_report)
+    print("macro average f1 score:", macro_average_f1_score)
+
+
+    #print("pred y:",predictions)         #FOR DEBUG
+    #print("y_test (actuals)", y_test)    #FOR DEBUG
+
+
+    if hasattr(classifier, "coef_"):
+        print(f"dimensionality: ", {classifier.coef_.shape[1]})
+        print(f"density: ",  {density(classifier.coef_)})
+
+    if classifier_name:
+        classifier_descr = str(classifier_name)
+    else:
+        classifier_descr = classifier.__class__.__name__
+
+    return classifier_descr, macro_average_f1_score, training_duration_time, testing_duration_time
+
+
+
 
 if __name__ == "__main__":
     """
         uncomment the following lines to run the functions once you have completed them 
-        """
+    """
 
     df = read_speeches(path=Path.cwd() / "texts" / "speeches")
 
@@ -212,5 +275,9 @@ if __name__ == "__main__":
                                                                                                             X_test,
                                                                                                             y_train,
                                                                                                             y_test)
+
+
+
+
 
     #LoadData_and_ExtractFeatures(df)
