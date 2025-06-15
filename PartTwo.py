@@ -134,8 +134,8 @@ def LoadData(df):
 
 
 
-
-def LoadData_and_ExtractFeatures(df):
+  ##def LoadData_and_ExtractFeatures(df):
+def ExtractFeatures(X_train, X_test, y_train, y_test):
     # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
     # omitting English stopwords and setting max_features to 3000. Split the data into a train and test set, using
     # stratified sampling, with a random seed of 26      [DONE]
@@ -149,31 +149,17 @@ def LoadData_and_ExtractFeatures(df):
     """Load data
 
         Args:
-             df: pandas dataframe containing x (data) and y (labels)
+           X_train:
+           X_test:
+           y_train:
+           y_test:
         Returns:
            X_train_extracted_features: Extracted tf-idf features from training data
            X_test_extracted_features: Extracted tf-idf features from testing data
            y_train:  labels training data
            y_test:  labels testing data
+           features_names:
     """
-    # Checking the columns exist in the dataframe
-    # display(df.columns) #FOR DEBUG
-
-    #Split the dataframe data intothe required  x (data) and y (target labels)
-    X = df['speech']
-    y = df['party']
-
-    #display(X)  # FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO iNSPECT DATA ('speech)
-    #display(y)  # FOR DEBUG - PLEASE UNCOMMENT IF YOU WOULD LIKE TO iNSPECT LABELS DATA ('party')
-
-    # Split the X (speeches) and y (party labels) data into training set 75% and 25% for testing set
-    # using stratifIed sampling, max_features set to 3000,
-    # Where: max features means, if not None, is used to build a vocabulary that considers the top max_features
-    # ordered by term frequency across the corpus. Otherwise, all features are used (taken from
-    # TfidVectorizer scikit learn online help pages)
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=26, stratify=y)
-
 
     #REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html for examples
     # of extracting features for train and test data using TfIdfVectorizer
@@ -186,30 +172,29 @@ def LoadData_and_ExtractFeatures(df):
     )
     X_train_extracted_features = vectorizer.fit_transform(X_train)
     duration_train = time() - t0
+    print("train time %f " % duration_train)
 
     # Extracting features from the test data using the same vectorizer
     t0 = time()
     X_test_extracted_features = vectorizer.transform(X_test)
     duration_test = time() - t0
+    print("test time %f " % duration_test)
 
     feature_names = vectorizer.get_feature_names_out()
 
-    #print(f"{len(X_train)} documents (training set)")   # FOR DEBUG
-    #print(f"{len(X_test)} documents (testing set)")     # FOR DEBUG
-    #print("Vectorise training done: %f" % duration_train ," seconds")  #FOR DEBUG
-    #print("Vectorise testing done: %f" % duration_test ," seconds")  #FOR DEBUG
+    print(f"{len(X_train)} documents (training set)")   # FOR DEBUG
+    print(f"{len(X_test)} documents (testing set)")     # FOR DEBUG
+    print("Vectorise training done: %f" % duration_train ," seconds")  #FOR DEBUG
+    print("X_train n_samples: ", pd.DataFrame(X_train).shape[0], "X_train n_features:", pd.DataFrame(X_train).shape[1])  #FOR DEBUG
+    print("Vectorise testing done: %f" % duration_test ," seconds")  #FOR DEBUG
+    print("X_test n_samples: ", pd.DataFrame(X_test).shape[0], "X_test n_features:", pd.DataFrame(X_test).shape[1])  # FOR DEBUG
 
     return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
-
-    # (c) Train RandomForest (with n_estimators=300) and SVM with linear kernel classifiers on the training set,
-    # and print teh scikit-learn macro-average f1 score and classification report for each classifier on the test set.
-    # The label that you are trying to predict is the 'party' value
-
 
 
 if __name__ == "__main__":
     """
-        uncomment the following lines to run the functions once you have completed them  - (4 min approx to run)
+        uncomment the following lines to run the functions once you have completed them 
         """
 
     df = read_speeches(path=Path.cwd() / "texts" / "speeches")
@@ -220,5 +205,12 @@ if __name__ == "__main__":
     print("")
     X_train, X_test, y_train, y_test = LoadData(df)
 
+    print("")
+    print("Feature Extraction using TfidfVectorizer")
+    print("")
+    X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names = ExtractFeatures(X_train,
+                                                                                                            X_test,
+                                                                                                            y_train,
+                                                                                                            y_test)
 
     #LoadData_and_ExtractFeatures(df)
