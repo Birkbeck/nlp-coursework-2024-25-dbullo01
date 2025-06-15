@@ -1,5 +1,6 @@
 
 
+
 import pandas as pd
 from IPython.display import display
 import numpy as np
@@ -98,7 +99,6 @@ def read_speeches(path=Path.cwd() / "texts" / "speeches"):
     #REF https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.shape.html
     print(df.shape)
     return df
-
 
 
 def LoadData_and_ExtractFeatures(df):
