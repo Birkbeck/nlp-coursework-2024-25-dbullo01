@@ -13,6 +13,9 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import f1_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import RandomizedSearchCV
+from pprint import pprint
 
 # Part Two - Feature Extraction and Classification
 
@@ -282,7 +285,81 @@ def classifier_pipeline(X_train, y_train, X_test, y_test):
         classification_results.append(benchmark_classification_models(classifier,classifier_name,X_train, y_train, X_test, y_test))
 
 
+def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
+    """
 
+    Args:
+        X_train:
+        X_test:
+        y_train:
+        y_test:
+
+    Returns:
+
+    """
+    #Classification of text documents using sparse features
+    #REF - https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html
+    #Sample pipeline for text feature extraction and evaluation
+    #REF - https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_text_feature_extraction.html
+
+    pipeline = Pipeline(
+        [
+            ("vect", TfidfVectorizer()),
+            ("clf", LinearSVC(class_weight="balanced")),
+        ]
+    )
+
+    parameter_grid = {
+        "vect__ngram_range": ((1,1),(1,2),(1,3)),  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
+        ##"clf__C": (0.01, 0.1, 1, 10, 100),
+    }
+
+    random_search = RandomizedSearchCV(
+        estimator=pipeline,
+        param_distributions=parameter_grid,
+        n_iter=3,
+        random_state=0,
+        n_jobs=2,
+        verbose=1
+    )
+    print("Performing grid search...")
+    print("Hyperparameters to be evaluated:")
+    pprint(parameter_grid)
+
+    t0 = time()
+    random_search.fit(X_train,y_train)
+    duration_of_fitting = time() - t0
+    print("duration of fitting: %.3f s" % duration_of_fitting)
+
+    print("Best parameters combination found:")
+    best_parameters = random_search.best_estimator_.get_params()
+    for param_name in sorted(parameter_grid.keys()):
+        print(f"{param_name}:", {best_parameters[param_name]})
+
+
+    t0 = time()
+    predictions = random_search.predict(X_test)
+    testing_duration_time = time() - t0
+
+
+    # Print the classification report and macro_average f1 score
+    class_report = classification_report(y_test, predictions, zero_division=0)
+    macro_average_f1_score = f1_score(y_test, predictions, average="macro", zero_division=0)
+    print("classification report:")
+    print(class_report)
+    print("macro average f1 score:", macro_average_f1_score)
+
+
+    #test_accuracy = random_search.score(X_test, y_test)
+
+    #print(
+    #    "Accuracy of the best parameters using the inner CV of "
+    #    f"the random search: {random_search.best_score_:.3f}"
+    #)
+    #print(f"Accuracy on test set: {test_accuracy:.3f}")
+
+
+    return
 
 
 
@@ -311,6 +388,16 @@ if __name__ == "__main__":
     print("Training classification models")
     print("")
     classifier_pipeline(X_train_extracted_features, y_train, X_test_extracted_features, y_test)
+
+
+
+    print("")
+    print("")
+    print("Hyperparameter tuning for the LinearSVC and TfidfVectorizer (vectoriser)")
+    print("")
+    pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test)
+
+
 
 
 
