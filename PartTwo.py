@@ -197,6 +197,68 @@ def ExtractFeatures(X_train, X_test, y_train, y_test):
 
     return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
+def ExtractFeatures_bi_grams(df):
+        # (d) Adjust the parameters of the TfidVectorizer so that uni-grams, bi-grams and tri-grams will be considered
+        #     as features, limiting the total number of features to 3000. Print the classification report as in 2(c) again
+        #     using these parameters [DONE]
+        # REF https://code.likeagirl.io/good-train-test-split-an-approach-to-better-accuracy-91427584b614 for the types of
+        # train test splits
+        # REF https://builtin.com/data-science/train-test-split#:~:text=Stratified%20Splitting&text=This%20creates%20training%20and%20testing,categories%20aren't%20represented%20equally.
+        # for what stratified sampling means
+        # REF https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
+        # for parameters and their defaults and what max_features and stratified means
+
+        """Load data
+
+            Args:
+                X_train:
+                X_test:
+                y_train:
+                y_test:
+            Returns:
+                X_train_extracted_features: Extracted tf-idf features from training data
+                X_test_extracted_features: Extracted tf-idf features from testing data
+                y_train:  labels training data
+                y_test:  labels testing data
+                features:
+        """
+
+        # REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html for examples
+        # of extracting features for train and test data using TfIdfVectorizer
+
+        # Extracting features using a sparse vectorizer TfIdf
+        # Using bi-grams instead of uni-grams or tri-grams as bi-grams performed best during hyperparameter tuning
+        t0 = time()
+        vectorizer = TfidfVectorizer(
+            max_features=3000,
+            ngram_range=(1, 2),
+            stop_words="english"
+        )
+        X_train_extracted_features = vectorizer.fit_transform(X_train)
+        duration_train = time() - t0
+        print("train time %f " % duration_train)
+
+        # Extracting features from the test data using the same vectorizer
+        t0 = time()
+        X_test_extracted_features = vectorizer.transform(X_test)
+        duration_test = time() - t0
+        print("test time %f " % duration_test)
+
+        feature_names = vectorizer.get_feature_names_out()
+
+        print(f"{len(X_train)} documents (training set)")  # FOR DEBUG
+        print(f"{len(X_test)} documents (testing set)")  # FOR DEBUG
+        print("Vectorise training done: %f" % duration_train, " seconds")  # FOR DEBUG
+        print("X_train n_samples: ", pd.DataFrame(X_train).shape[0], "X_train n_features:",
+              pd.DataFrame(X_train).shape[1])  # FOR DEBUG
+        print("Vectorise testing done: %f" % duration_test, " seconds")  # FOR DEBUG
+        print("X_test n_samples: ", pd.DataFrame(X_test).shape[0], "X_test n_features:",
+              pd.DataFrame(X_test).shape[1])  # FOR DEBUG
+
+        return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
+
+
+
 # (c) Train RandomForest (with n_estimators=300) and SVM with linear kernel classifiers on the training set,
     # and print the scikit-learn macro-average f1 score and classification report for each classifier on the test set.
     # The label that you are trying to predict is the 'party' value
@@ -397,8 +459,16 @@ if __name__ == "__main__":
     print("")
     pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test)
 
+    print("")
+    print("")
+    print("Feature Extraction using TfidfVectorizer (bi-gram) - after selecting this n-gram from hyperparameter tuning")
+    print("")
+    X_train_extracted_features2, X_test_extracted_features2, y_train2, y_test2, feature_names2 = ExtractFeatures_bi_grams(df)
 
-
+    print("")
+    print("Training classification models")
+    print("")
+    classifier_pipeline(X_train_extracted_features2, y_train2, X_test_extracted_features2, y_test2)
 
 
     #LoadData_and_ExtractFeatures(df)
