@@ -330,7 +330,7 @@ def get_fks(df):
     return results
 
 
-def create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels"):
+def read_files_and_create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels"):
     text = ""
     relpath = path
     file_type = ".txt"  # if your data is not in a plain text format, you can change this
@@ -523,7 +523,7 @@ if __name__ == "__main__":
         print(subjects_by_verb_count(row["parsed"], "hear"))
         print("\n")
 
-    create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels")
+    read_files_and_create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels")
     """
     
     for i, row in df.iterrows():
