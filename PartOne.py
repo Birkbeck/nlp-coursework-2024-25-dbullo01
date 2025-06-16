@@ -6,6 +6,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import sent_tokenize
 import pandas as pd
+import numpy as np
 import spacy
 from IPython.display import display
 import pickle
@@ -13,6 +14,8 @@ import re                                   # for regular expressions
 import cmudict
 cmu_dict = cmudict.dict()
 from collections import Counter
+
+
 from spacy.symbols import VERB, nsubj,nsubjpass, csubj, csubjpass
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
@@ -327,14 +330,27 @@ def get_fks(df):
     return results
 
 
+
 def subjects_by_verb_pmi(doc, target_verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
+
+
     pass
 
 
+# (f) (ii) The title of each novel and a list of the ten most common syntactic subjects of the verb "to hear" in any tense
+# in the text, ordered by their frequency.
 
 def subjects_by_verb_count(doc, verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
+    """
+            Args:
+                doc:  dataframe colunn containing tokenizsed and parsed spacy doc  
+                verb: verb to find common subjects for
+            Returns:
+                list: List containing common subjects for the specified verb
+    """
+
     # REF-https://stackoverflow.com/questions/66181946/identify-subject-in-sentences-using-spacy-in-advanced-cases
     # REF-https://spacy.io/usage/linguistic-features#dependency-parse
     # REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
@@ -349,16 +365,15 @@ def subjects_by_verb_count(doc, verb):
     for token in doc:
         #if token.lemma_ == "hear":  # FOR DEBUG - SHOWS ALL AVAILABLE DEPENDENCIES FOR DIFF TENSES OF VERB "Hear"
         #Show subject dependencies for Verb "hear" in different tenses (using lemma for "hear")
-        if token.dep_ in ("nsubj","nsubjpass", "csubj", "csubjpass") and token.lemma_ == "hear":
+        if token.dep_ in ("nsubj","nsubjpass", "csubj", "csubjpass") and token.pos_ == "VERB" and token.lemma_ == verb:
             #head = token.head.text
             # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to
             # other words in the text
             # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy;
             # nsubj - nominal subject, nsubjpass - nominal subject passive, csubj - clausal subject,
             # csubjpass - clausal subject passive
-            #print(token.text, token.dep_, token.pos_, token.lemma_)  #FOR DEBUG
-            print(token.text, token.dep_, token.pos_, token.lemma_)
-            syntactic_subjects[token.text, token.dep_, token.lemma_] += 1
+            print(token.head.text, token.dep_, token.pos_, token.text, token.lemma_) #FOR DEBUG
+            syntactic_subjects[token.head.text, token.dep_, token.text, token.lemma_] += 1
             itemList.append([syntactic_subjects])
 
     # printing the 10 most common syntactic subjects for the verb "to hear" in the text
@@ -431,4 +446,7 @@ if __name__ == "__main__":
         print(subjects_by_verb_pmi(row["parsed"], "hear"))
         print("\n")
     """
+
+
+
 
