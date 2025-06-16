@@ -13,6 +13,7 @@ import re                                   # for regular expressions
 import cmudict
 cmu_dict = cmudict.dict()
 from collections import Counter
+from spacy.symbols import VERB, nsubj,nsubjpass, csubj, csubjpass
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
 nlp = spacy.load("en_core_web_sm")
@@ -334,27 +335,36 @@ def subjects_by_verb_pmi(doc, target_verb):
 
 def subjects_by_verb_count(doc, verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
+    # REF-https://stackoverflow.com/questions/66181946/identify-subject-in-sentences-using-spacy-in-advanced-cases
+    # REF-https://spacy.io/usage/linguistic-features#dependency-parse
+    # REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
+    # https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
 
     itemList = []
 
     # counting syntactic subjects
     syntactic_subjects = Counter()
 
-    # Using zip to get title and doc from dataframe (in each row of title and doc dataframe columns)
-    for title, doc in zip(df['title'], df['parsed']):
-        for token in doc:
-            if token.pos_ == "VERB" and token.lemma_ == "to hear":
-                # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to other words in the text
-                # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy
-                if token.dep_ == "nsubj" | token.dep_ == "" | token.dep == "" or token.dep == "":
-                    print(token.text, token.dep_, token.head.text, token.pos_)  #FOR DEBUG
-                    syntactic_subjects[token.text, token.lemma_] += 1
+    # Get doc from dataframe column
+    for token in doc:
+        #if token.lemma_ == "hear":  # FOR DEBUG - SHOWS ALL AVAILABLE DEPENDENCIES FOR DIFF TENSES OF VERB "Hear"
+        #Show subject dependencies for Verb "hear" in different tenses (using lemma for "hear")
+        if token.dep_ in ("nsubj","nsubjpass", "csubj", "csubjpass") and token.lemma_ == "hear":
+            #head = token.head.text
+            # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to
+            # other words in the text
+            # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy;
+            # nsubj - nominal subject, nsubjpass - nominal subject passive, csubj - clausal subject,
+            # csubjpass - clausal subject passive
+            #print(token.text, token.dep_, token.pos_, token.lemma_)  #FOR DEBUG
+            print(token.text, token.dep_, token.pos_, token.lemma_)
+            syntactic_subjects[token.text, token.dep_, token.lemma_] += 1
+            itemList.append([syntactic_subjects])
 
     # printing the 10 most common syntactic subjects for the verb "to hear" in the text
-    print("10 MOST COMMON SYNTACTIC SUBJECTS")
-    print(syntactic_subjects.most_common(10))
+    print("10 MOST COMMON SYNTACTIC SUBJECTS FOR VERB : " + verb)
 
-    pass
+    return itemList
 
 
 
@@ -371,22 +381,24 @@ def syntactic_objects_counts(doc):
             itemList (list): containing "title" of document as string and  list of tuples where each tuple is Syntactic 
             Object and freq count for that syntactic object in the given text.
     """
+    #REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
+    #https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
+    # REF https://en.wikipedia.org/wiki/Object_(grammar) to identify types of object in english grammar
+    #REF https://spacy.io/models/en#en_core_web_sm  FOR PARSE TAGS FOR SPACY MODEL To identify obj parser tags
 
     itemList = []
 
-    #counting syntactic objects
+    #counting syntactic objects  in each novel text (parsed data from spacy doc stored in 'parsed' column of dataframe)
     syntactic_objects = Counter()
 
     #Using zip to get title and doc from dataframe (in each row of title and doc dataframe columns)
-    for title, doc in zip(df['title'],df['doc']):
+    for title, doc in zip(df['title'],df['parsed']):
         for token in doc:
-            if token.dep_:
-                #count each type of syntactic object in doc
-                syntactic_objects[token.dep_] += 1
+            if token.dep_ == "dobj" or token == "iobj" or token.dep_ == "pobj":
+                # count each syntactic object in doc
+                syntactic_objects[(token.lemma_, token.dep_)] += 1
         #Get the ten most common syntactic objects for each title and store both the title and list of syntactic objects
         itemList.append([title, syntactic_objects.most_common(10)])
-        #Reset the counter for the next text file (SpaCy doc)
-        syntactic_objects = Counter()
 
     return itemList
 
@@ -408,12 +420,12 @@ if __name__ == "__main__":
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     df = pd.read_pickle(Path.cwd() / "pickles" /"parsed.pickle.pkl")
     print(syntactic_objects_counts(df))
-    """ 
+
     for i, row in df.iterrows():
         print(row["title"])
         print(subjects_by_verb_count(row["parsed"], "hear"))
         print("\n")
-
+    """
     for i, row in df.iterrows():
         print(row["title"])
         print(subjects_by_verb_pmi(row["parsed"], "hear"))
