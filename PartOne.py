@@ -13,7 +13,7 @@ import pickle
 import re                                   # for regular expressions
 import cmudict
 cmu_dict = cmudict.dict()
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 from spacy.symbols import VERB, nsubj,nsubjpass, csubj, csubjpass
@@ -330,6 +330,87 @@ def get_fks(df):
     return results
 
 
+def create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels"):
+    text = ""
+    relpath = path
+    file_type = ".txt"  # if your data is not in a plain text format, you can change this
+    filenames = []
+    title = []
+    author = []
+    year = []
+    data = []
+
+
+    # this for loop will run through folders and subfolders looking for a specific file type
+    for root, dirs, files in os.walk(relpath, topdown=False):
+        # look through all the files in the given directory
+        for name in files:
+            if name.endswith(file_type):
+                # create absolute file path for each file found at specifed relative path (path)
+                # REF https://stackoverflow.com/questions/17429044/constructing-absolute-path-with-os-path-join
+                absolutepath = os.path.abspath(os.path.join(root, name))
+                # store absolute paths to files in list (as a list of file aboslute paths)
+                filenames.append(absolutepath)
+
+                # Split name of file into parts representing title, author and year using hyphen ('-') to split name on
+                items = name.split('-')
+                # title part from file name
+                title.append(items[0])
+                # store author part of file name to
+                author.append(items[1])
+                # store year part for file name to years (list) e.g (stripping '.txt' off the end of items[2] value)
+                year.append(items[2][:-4])
+
+    # this for loop then goes through the list of files (absolute file paths), reads the files, and then adds the text
+    # to Data (list)
+    data_clean = []
+    for filename in filenames:
+        with open(filename, encoding='utf-8') as afile:
+            print(filename)
+            # Create Cooccurrence Matrix for read text
+            cooccurrence_matrix(afile.read())
+            data.append(afile.read())  # read the file then add it to the list
+            afile.close()  # close the file when you're done
+    return
+
+def cooccurrence_matrix(text):
+    """Create term term  co-occurence matrices"""
+    """
+
+    Args:
+        text: input text to create cooccurrence matrix for
+
+    Returns:
+        coocurrence:  coocurrence matrix as dictionary
+    """
+    # Initialize co-occurrence dictionary
+    # Lab 6 video af Lab 3 code
+
+    cooccurrence = defaultdict(lambda: defaultdict(int))
+
+    # Tokenize text into sentences
+    sentences = sent_tokenize(text)
+
+    for sentence in sentences:
+        # Tokenize sentence into words and normalize 9lowercase and remove punctuation)
+        words = word_tokenize(sentence.lower())
+        words = [word for word in words if word not in string.punctuation]
+
+        unique_words = set(words)
+
+        for word in unique_words:
+            for co_word in unique_words:
+                if word != co_word:
+                    cooccurrence[word][co_word] += 1
+
+    # Display co-occurrence counts
+    for word, co_words in cooccurrence.items():
+        print(f"{word}: {dict(co_words)}")
+
+    print(cooccurrence)
+    return cooccurrence
+
+
 
 def subjects_by_verb_pmi(doc, target_verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
@@ -352,7 +433,8 @@ def subjects_by_verb_count(doc, verb):
     """
 
     # REF-https://stackoverflow.com/questions/66181946/identify-subject-in-sentences-using-spacy-in-advanced-cases
-    # REF-https://spacy.io/usage/linguistic-features#dependency-parse
+    # REF-https://spacy.io/usage/linguistic-features#dependency-parse  - The example table showed subjects, verbs and
+    # children in relation to subject.
     # REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
     # https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
 
@@ -363,10 +445,10 @@ def subjects_by_verb_count(doc, verb):
 
     # Get doc from dataframe column
     for token in doc:
-        #if token.lemma_ == "hear":  # FOR DEBUG - SHOWS ALL AVAILABLE DEPENDENCIES FOR DIFF TENSES OF VERB "Hear"
+        if token.lemma_ == "hear":  # FOR DEBUG - SHOWS ALL AVAILABLE DEPENDENCIES FOR DIFF TENSES OF VERB "Hear"
         #Show subject dependencies for Verb "hear" in different tenses (using lemma for "hear")
-        if token.dep_ in ("nsubj","nsubjpass", "csubj", "csubjpass") and token.pos_ == "VERB" and token.lemma_ == verb:
-            #head = token.head.text
+          if token.dep_ in ("nsubj","nsubjpass", "csubj", "csubjpass") and token.pos_ == "VERB" and token.lemma_ == verb:
+             #head = token.head.text
             # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to
             # other words in the text
             # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy;
@@ -440,7 +522,10 @@ if __name__ == "__main__":
         print(row["title"])
         print(subjects_by_verb_count(row["parsed"], "hear"))
         print("\n")
+
+    create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels")
     """
+    
     for i, row in df.iterrows():
         print(row["title"])
         print(subjects_by_verb_pmi(row["parsed"], "hear"))
