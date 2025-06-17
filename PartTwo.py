@@ -148,6 +148,29 @@ def LoadData(df):
 # and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
 
 
+
+def remove_special_chars(text):
+    """ Remove special characters from text
+
+    Args:
+        text: text that special characters to be removed from using regex expression
+
+    Returns:
+        text: text with special characters removed
+
+    Called by:
+        tokenize_text() function
+    """
+    # REF: https://www.geeksforgeeks.org/python/python-removing-unwanted-characters-from-string/
+    # Choosing to keep alphanumeric including digits and removing any other characters
+    # Digits such as dates and times are useful for context in the speeches
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+
+    text = re.sub(r'[^a-zAA-z0-9\s]', '', text)
+    return text
+
+
 def remove_additional_whitespace_characters(text):
     """ Remove additional whitespace characters from text
 
