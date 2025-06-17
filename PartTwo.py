@@ -16,6 +16,7 @@ from sklearn.model_selection import RandomizedSearchCV
 from pprint import pprint
 
 from nltk.stem import PorterStemmer
+import re
 
 # Part Two - Feature Extraction and Classification
 
@@ -145,6 +146,26 @@ def LoadData(df):
 # to no more than 3000, and using the same three classifiers as above. Print the classification report for the best
 # performing classifier using your tokenizer. Marks will be awarded both for a high overall classification performance
 # and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
+
+
+def remove_additional_whitespace_characters(text):
+    """ Remove additional whitespace characters from text
+
+    Args:
+        text: input text to remove additional whitespace characters from using regex expression
+
+    Returns:
+        text: text with additional whitespace removed
+
+    Called by:
+        tokenize_text() function
+    """
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+
+    text = re.sub(' +', ' ', text)
+    return text
+
 
 def stemmer(text):
     """ Stem text to remove inflections
