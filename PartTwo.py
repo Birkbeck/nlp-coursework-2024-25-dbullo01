@@ -18,6 +18,9 @@ from pprint import pprint
 from nltk.stem import PorterStemmer
 import re
 import unicodedata
+from nltk.tokenize import word_tokenize
+from nltk.tokenize import sent_tokenize
+import nltk.corpus
 
 # Part Two - Feature Extraction and Classification
 
@@ -147,6 +150,46 @@ def LoadData(df):
 # to no more than 3000, and using the same three classifiers as above. Print the classification report for the best
 # performing classifier using your tokenizer. Marks will be awarded both for a high overall classification performance
 # and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
+
+def tokenize_text(text):
+    """ custom tokenizer that preprocess text for input to the TftdfVectorizer
+
+        Args:
+            text: text to clean and tokenize
+
+        Returns:
+            text: text that is cleaned and has been tokenized
+    """
+
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+    # REF - Lab 7 video and in class code demonstration Week 7
+
+    #Remove accents from text
+    text = remove_accents(text)
+
+    # Remove special characters from the text - Want to remove anything not alphanumeric . Want to preserve digits
+    # an example is reference to date and time in a speech which is relevant context in a speech
+    text = remove_special_chars(text)
+
+    #Remove additional whitespace characters
+    text = remove_additional_whitespace_characters(text)
+
+    #Stemming of the words the text to remove inflections such as (e.g.  ing, s, ed. Using nltk Porterstemmer
+    text = stemmer(text)
+
+    # Using spaCy sentence tokenizer to tokenize text to sentences and then spaCy word tokenizer
+    # to tokenize sentences to words
+    sentences = sent_tokenize(text)
+    word_tokens = [word_tokenize(sentence.lower()) for sentence in sentences]
+    #tokens = word_tokenize(text)
+
+    # Using nltk stopwords list (english language) to remove stopwords from text
+    stopword_list = nltk.corpus.stopwords.words('english')
+    new_word_tokens = [token for token in word_tokens if token not in stopword_list]
+    return new_word_tokens
+
+
 
 def remove_accents(text):
     """
@@ -552,3 +595,17 @@ if __name__ == "__main__":
     classifier_pipeline(X_train_extracted_features2, y_train2, X_test_extracted_features2, y_test2)
 
 
+    #get each speech from speeches column of dataframe to clean -
+    df = read_speeches(path=Path.cwd() / "texts" / "speeches")
+    list_of_tokenised_docs = []
+    for i, row in df.iterrows():
+        print(i) # row number for speech in speech column of dataframe
+        ## print(str(row["speech"]))
+        text = str(row["speech"])
+        # clean each text (pre-processing text)
+        tokens = tokenize_text(text)
+        list_of_tokenised_docs.append(tokens)
+        print(tokens)
+
+    #Print stopwords to check
+    #print(nltk.corpus.stopwords.words('english'))
