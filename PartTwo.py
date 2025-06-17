@@ -15,6 +15,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import RandomizedSearchCV
 from pprint import pprint
 
+from nltk.stem import PorterStemmer
+
 # Part Two - Feature Extraction and Classification
 
 # In the second part of the coursework, your task is to train and test machine learning classifiers on a dataset of
@@ -39,6 +41,7 @@ def read_speeches(path=Path.cwd() / "texts" / "speeches"):
     # (a) Read the handsard40000.csv dataset in the texts directory into a dataframe. Subset and rename the dataframe
     # as follows;
     # REF https://pandas.pydata.org/docs/reference/api/pandas.set_option.html
+    # REF https://stackoverflow.com/questions/36462852/how-to-read-utf-8-files-with-pandas - Python 3.0 pd.read_csv already handles utf-8
     df = pd.read_csv(path/"hansard40000.csv")
     # print(df)  #PLEASE UNCOMMENT IF YOU WOULD LIKE TO DISPLAY DATAFRAME
 
@@ -135,6 +138,33 @@ def LoadData(df):
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=26, stratify=y)
     return X_train, X_test, y_train, y_test
+
+
+#(e) Implement a new custom tokenizer and pass it to the tokenizer argument of Tfidfvectorizer. You can use this function
+# in any way you would like to try to achieve the best classification performance while keeping the number of features
+# to no more than 3000, and using the same three classifiers as above. Print the classification report for the best
+# performing classifier using your tokenizer. Marks will be awarded both for a high overall classification performance
+# and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
+
+def stemmer(text):
+    """ Stem text to remove inflections
+
+    Args:
+        text: input text to stem
+
+    Returns:
+        text : stemmed text
+
+    Called by:
+        tokenize_text() function
+    """
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+
+    ps = PorterStemmer()
+    ps.stem(text)
+    return text
+
 
 
 def ExtractFeatures(X_train, X_test, y_train, y_test):
@@ -459,3 +489,5 @@ if __name__ == "__main__":
     print("Training classification models")
     print("")
     classifier_pipeline(X_train_extracted_features2, y_train2, X_test_extracted_features2, y_test2)
+
+
