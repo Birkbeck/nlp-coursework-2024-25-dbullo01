@@ -17,6 +17,7 @@ from pprint import pprint
 
 from nltk.stem import PorterStemmer
 import re
+import unicodedata
 
 # Part Two - Feature Extraction and Classification
 
@@ -147,7 +148,23 @@ def LoadData(df):
 # performing classifier using your tokenizer. Marks will be awarded both for a high overall classification performance
 # and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
 
+def remove_accents(text):
+    """
+    Args:
+        text: text to remove accent(s) from characters using unicodedata library
 
+    Returns:
+        text: text with accent(s) removed from characters
+
+    Called by:
+        tokenize_text() function
+
+    """
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+
+    text = unicodedata.normalize('NFKD',text).encode('ascii','ignore').decode('utf-8','ignore')
+    return text
 
 def remove_special_chars(text):
     """ Remove special characters from text
