@@ -21,6 +21,7 @@ import unicodedata
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import sent_tokenize
 import nltk.corpus
+import string
 
 # Part Two - Feature Extraction and Classification
 
@@ -151,6 +152,8 @@ def LoadData(df):
 # performing classifier using your tokenizer. Marks will be awarded both for a high overall classification performance
 # and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
 
+
+
 def tokenize_text(text):
     """ custom tokenizer that preprocess text for input to the TftdfVectorizer
 
@@ -165,28 +168,29 @@ def tokenize_text(text):
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
     # REF - Lab 7 video and in class code demonstration Week 7
 
-    #Remove accents from text
+    # Remove accents from text
     text = remove_accents(text)
 
     # Remove special characters from the text - Want to remove anything not alphanumeric . Want to preserve digits
     # an example is reference to date and time in a speech which is relevant context in a speech
     text = remove_special_chars(text)
 
-    #Remove additional whitespace characters
+    # Remove additional whitespace characters
     text = remove_additional_whitespace_characters(text)
 
-    #Stemming of the words the text to remove inflections such as (e.g.  ing, s, ed. Using nltk Porterstemmer
+    # Stemming of the words the text to remove inflections such as (e.g.  ing, s, ed. Using nltk Porterstemmer
     text = stemmer(text)
 
     # Using spaCy sentence tokenizer to tokenize text to sentences and then spaCy word tokenizer
     # to tokenize sentences to words
     sentences = sent_tokenize(text)
     word_tokens = [word_tokenize(sentence.lower()) for sentence in sentences]
-    #tokens = word_tokenize(text)
+
+
 
     # Using nltk stopwords list (english language) to remove stopwords from text
     stopword_list = nltk.corpus.stopwords.words('english')
-    new_word_tokens = [token for token in word_tokens if token not in stopword_list]
+    new_word_tokens = [token for token in word_tokens_flattened if token not in stopword_list]
     return new_word_tokens
 
 
@@ -327,7 +331,8 @@ def ExtractFeatures(X_train, X_test, y_train, y_test):
 
     return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
-def ExtractFeatures_bi_grams(df):
+#def ExtractFeatures_bi_grams(df):
+def ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test):
         # (d) Adjust the parameters of the TfidVectorizer so that uni-grams, bi-grams and tri-grams will be considered
         #     as features, limiting the total number of features to 3000. Print the classification report as in 2(c) again
         #     using these parameters [DONE]
@@ -386,6 +391,74 @@ def ExtractFeatures_bi_grams(df):
               pd.DataFrame(X_test).shape[1])  # FOR DEBUG
 
         return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
+
+
+
+def ExtractFeatures_with_custom_tokenizer(X_train, X_test, y_train, y_test):
+    # (e) Implement a new custom tokenizer and pass it to the tokenizer argument of TfidfVectorizer.
+    # You can use this function in any way ypu like to try to achieve the best classification
+    # performance while keeping the number of features to no more than 3000, and using the same
+    # three classifiers as above. Print the classification report for the best performing classifier
+    # using your tokenizer. Marks will be awarded both for a high overall classification performance,
+    # and a good trade-off between classification performance and efficiency (i.e., using fewer parameters [DOING]
+    # REF https://code.likeagirl.io/good-train-test-split-an-approach-to-better-accuracy-91427584b614 for the types of
+    # train test splits
+    # REF https://builtin.com/data-science/train-test-split#:~:text=Stratified%20Splitting&text=This%20creates%20training%20and%20testing,categories%20aren't%20represented%20equally.
+    # for what stratified sampling means
+    # REF https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
+    # for parameters and their defaults and what max_features and stratified means
+
+    """Load data
+
+        Args:
+            X_train:
+            X_test:
+            y_train:
+            y_test:
+        Returns:
+            X_train_extracted_features: Extracted tf-idf features from training data
+            X_test_extracted_features: Extracted tf-idf features from testing data
+            y_train:  labels training data
+            y_test:  labels testing data
+            features:
+    """
+
+    # REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html for examples
+    # of extracting features for train and test data using TfIdfVectorizer
+
+    # Extracting features using a sparse vectorizer TfIdf
+    # Using bi-grams instead of uni-grams or tri-grams as bi-grams performed best during hyperparameter tuning
+    t0 = time()
+    vectorizer = TfidfVectorizer(
+        max_features=3000,
+        ngram_range=(1, 2),
+        #stop_words=None,            #stop words handled by tokenizer_text() custom function
+        #lowercase=False,            #lowercase handled by tokenizer_text() custom function
+        tokenizer=tokenize_text,    #calls custom tokenizer and preprocesses and then tokenizes text
+        analyzer='word',
+    )
+    X_train_extracted_features = vectorizer.fit_transform(X_train)
+    duration_train = time() - t0
+    print("train time %f " % duration_train)
+
+    # Extracting features from the test data using the same vectorizer
+    t0 = time()
+    X_test_extracted_features = vectorizer.transform(X_test)
+    duration_test = time() - t0
+    print("test time %f " % duration_test)
+
+    feature_names = vectorizer.get_feature_names_out()
+
+    print(f"{len(X_train)} documents (training set)")  # FOR DEBUG
+    print(f"{len(X_test)} documents (testing set)")  # FOR DEBUG
+    print("Vectorise training done: %f" % duration_train, " seconds")  # FOR DEBUG
+    print("X_train n_samples: ", pd.DataFrame(X_train).shape[0], "X_train n_features:",
+          pd.DataFrame(X_train).shape[1])  # FOR DEBUG
+    print("Vectorise testing done: %f" % duration_test, " seconds")  # FOR DEBUG
+    print("X_test n_samples: ", pd.DataFrame(X_test).shape[0], "X_test n_features:",
+          pd.DataFrame(X_test).shape[1])  # FOR DEBUG
+
+    return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
 
 # (c) Train RandomForest (with n_estimators=300) and SVM with linear kernel classifiers on the training set,
@@ -565,6 +638,28 @@ if __name__ == "__main__":
     print("")
     X_train, X_test, y_train, y_test = LoadData(df)
 
+    #print("X_train:")
+    #flatten_nested_list(X_train)
+    #print(X_train.shape[0], X_train.shape[0])
+    #print(X_train)
+
+    #print("X_test:")
+    #flatten_nested_list(X_test)
+    #print(X_test.shape[0], X_test.shape[0])
+    #print(X_test)
+
+    #print("y_train:")
+    #flatten_nested_list(y_train)
+    #print(y_train.shape[0], y_train.shape[0])
+    #print(y_train)
+
+    #print("y_test:")
+    #flatten_nested_list(y_test)
+    #print(y_test.shape[0], y_test.shape[0])
+    #print(y_test)
+
+
+
     print("")
     print("Feature Extraction using TfidfVectorizer")
     print("")
@@ -587,25 +682,9 @@ if __name__ == "__main__":
     print("")
     print("Feature Extraction using TfidfVectorizer (bi-gram) - after selecting this n-gram from hyperparameter tuning")
     print("")
-    X_train_extracted_features2, X_test_extracted_features2, y_train2, y_test2, feature_names2 = ExtractFeatures_bi_grams(df)
+    X_train_extracted_features2, X_test_extracted_features2, y_train2, y_test2, feature_names2 = ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test)
 
     print("")
     print("Training classification models")
     print("")
     classifier_pipeline(X_train_extracted_features2, y_train2, X_test_extracted_features2, y_test2)
-
-
-    #get each speech from speeches column of dataframe to clean -
-    df = read_speeches(path=Path.cwd() / "texts" / "speeches")
-    list_of_tokenised_docs = []
-    for i, row in df.iterrows():
-        print(i) # row number for speech in speech column of dataframe
-        ## print(str(row["speech"]))
-        text = str(row["speech"])
-        # clean each text (pre-processing text)
-        tokens = tokenize_text(text)
-        list_of_tokenised_docs.append(tokens)
-        print(tokens)
-
-    #Print stopwords to check
-    #print(nltk.corpus.stopwords.words('english'))
