@@ -1,1 +1,22 @@
 Answers to the text questions go here.
+
+REF 1: Freelance, Myers (2021) The Flesch-Kincaid Test is Flawed and We Should Stop Using It (Myers Fleelance)
+REF 2: Redish. J (2000) - Readability Formulas Have Even More Limitations Than Klare Discusses. ACM Journal of Computer
+       Documentation (August 2000/Vol 24 No 3)
+REF 3: Leibtag,A (2017) - Why Readability Scores Are Killing Your Content (CMSWIRE Editorial)
+
+Part One - Syntax and Style
+
+1(d) The grade level reading score formula does not measure the difficulty of English language well. It
+assumes reading level is higher/more difficult with words with many syllables. The English language has many short
+words that are understood by college/university level educated readers but have one or two syllables and the Flesch
+Kincaid grade formula would score these shorter words(with one or two syllables) as a lower grade level score.
+Which indicates the text is easier to read but in reality isn't  and not an accurate reflection of text difficulty.
+There are words in the English language at school reading age that have much more than 1 or 2 syllables and  considered
+to have a higher reading score (difficult to read) by the reading formula. Thus the 2 metrics used by the formula do
+not handle difficulty of words well in the English language for the different readers (e.g. school children,
+university students)
+
+Secondly reliability of grading level score varies according to the sample of text in a document. The scope for one part
+of a document might vary from the score calculated for another part of the same document. Hence the reliability between
+different sections of the document varies.
