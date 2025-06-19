@@ -145,14 +145,26 @@ def LoadData(df):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=26, stratify=y)
     return X_train, X_test, y_train, y_test
 
+def flatten_nested_list(nested_list):
+    """
+    flattening nested list into a list
+
+    Args:
+        nested_list: nested list to flatten (remove sublists from lists)
+
+    Returns:
+        flattened_list: flattened nested list
+    """
+    flattened_list = [item for sublist in nested_list for item in sublist]
+    return flattened_list
+
+
 
 #(e) Implement a new custom tokenizer and pass it to the tokenizer argument of Tfidfvectorizer. You can use this function
 # in any way you would like to try to achieve the best classification performance while keeping the number of features
 # to no more than 3000, and using the same three classifiers as above. Print the classification report for the best
 # performing classifier using your tokenizer. Marks will be awarded both for a high overall classification performance
 # and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
-
-
 
 def tokenize_text(text):
     """ custom tokenizer that preprocess text for input to the TftdfVectorizer
