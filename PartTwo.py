@@ -198,7 +198,8 @@ def tokenize_text(text):
     sentences = sent_tokenize(text)
     word_tokens = [word_tokenize(sentence.lower()) for sentence in sentences]
 
-
+    # flatten nested list so that there is no sublists
+    word_tokens_flattened = flatten_nested_list(word_tokens)
 
     # Using nltk stopwords list (english language) to remove stopwords from text
     stopword_list = nltk.corpus.stopwords.words('english')
