@@ -651,26 +651,29 @@ if __name__ == "__main__":
     print("")
     X_train, X_test, y_train, y_test = LoadData(df)
 
+    #FOR DEBUG
     #print("X_train:")
     #flatten_nested_list(X_train)
     #print(X_train.shape[0], X_train.shape[0])
     #print(X_train)
 
+    #FOR DEBUG
     #print("X_test:")
     #flatten_nested_list(X_test)
     #print(X_test.shape[0], X_test.shape[0])
     #print(X_test)
 
+    #FOR DEBUG
     #print("y_train:")
     #flatten_nested_list(y_train)
     #print(y_train.shape[0], y_train.shape[0])
     #print(y_train)
 
+    #FOR DEBUG
     #print("y_test:")
     #flatten_nested_list(y_test)
     #print(y_test.shape[0], y_test.shape[0])
     #print(y_test)
-
 
 
     print("")
