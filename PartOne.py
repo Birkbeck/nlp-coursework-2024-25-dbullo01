@@ -411,12 +411,51 @@ def cooccurrence_matrix(text):
     return cooccurrence
 
 
+# f (iii) The title of each novel and a list of the ten most common syntactic subjects of the verb "hear" (in any tense)
+# in the text, ordered by their Pointwise Mutual Information
 
 def subjects_by_verb_pmi(doc, target_verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
+    """
+     Args:
+            doc:  dataframe colunn containing tokenized and parsed spacy doc  
+            target_verb: verb to find common subjects for
+     Returns:
+            list: List containing common subjects for the specified verb and ordered by PMI score
+    """
+    # REF-https://stackoverflow.com/questions/66181946/identify-subject-in-sentences-using-spacy-in-advanced-cases
+    # REF-https://spacy.io/usage/linguistic-features#dependency-parse  - The example table showed subjects, verbs and
+    # children in relation to subject.
+    # REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
+    # https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
+
+    itemList = []
+
+    # counting syntactic subjects
+    syntactic_subjects = Counter()
+
+    for token in doc:
+        if token.lemma_ == "hear":  # FOR DEBUG - SHOWS ALL AVAILABLE DEPENDENCIES FOR DIFF TENSES OF VERB "Hear"
+            # Show subject dependencies for Verb "hear" in different tenses (using lemma for "hear")
+            if token.dep_ in (
+            "nsubj", "nsubjpass", "csubj", "csubjpass") and token.pos_ == "VERB" and token.lemma_ == target_verb:
+                # head = token.head.text
+                # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to
+                # other words in the text
+                # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy;
+                # nsubj - nominal subject, nsubjpass - nominal subject passive, csubj - clausal subject,
+                # csubjpass - clausal subject passive
+                print(token.head.text, token.dep_, token.pos_, token.text, token.lemma_)  # FOR DEBUG
+                syntactic_subjects[token.head.text, token.dep_, token.text, token.lemma_] += 1
+                itemList.append([syntactic_subjects])
+
+    # printing the 10 most common syntactic subjects for the target verb "to hear" in the text
+    print("10 MOST COMMON SYNTACTIC SUBJECTS FOR VERB  : " + target_verb + " ORDERED BY PMI SCORE")
+
+    #Calculate PMI Score for the Common Syntactic Subjects STILL TO DO !
 
 
-    pass
+    return itemList
 
 
 # (f) (ii) The title of each novel and a list of the ten most common syntactic subjects of the verb "to hear" in any tense
@@ -426,7 +465,7 @@ def subjects_by_verb_count(doc, verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
     """
             Args:
-                doc:  dataframe colunn containing tokenizsed and parsed spacy doc  
+                doc:  dataframe colunn containing tokenized and parsed spacy doc  
                 verb: verb to find common subjects for
             Returns:
                 list: List containing common subjects for the specified verb
@@ -523,14 +562,13 @@ if __name__ == "__main__":
         print(subjects_by_verb_count(row["parsed"], "hear"))
         print("\n")
 
-    read_files_and_create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels")
-    """
-    
+    #read_files_and_create_cooccurrence_matrix(path=Path.cwd() / "texts" / "novels")
+
     for i, row in df.iterrows():
         print(row["title"])
         print(subjects_by_verb_pmi(row["parsed"], "hear"))
         print("\n")
-    """
+
 
 
 
