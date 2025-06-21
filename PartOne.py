@@ -1,4 +1,5 @@
 #Re-assessment template 2025
+import math
 import os
 import string
 from pathlib import Path
@@ -410,52 +411,48 @@ def cooccurrence_matrix(text):
     print(cooccurrence)
     return cooccurrence
 
+def calculate_pmi(verbCount, subjectCount, noOfTokensCount, syntactic_subjects):
+    """ Calculate pmi score
+
+        Args:
+            verbCount:  count of verb in document
+            subjectCount: count of subject in document
+            noOfTokensCount: count of tokens in document
+            syntactic_subjects: list of subject verb tuple(s) token in document
+        Returns:
+            pmi: pmi score as float value
+
+    """
+
+    #Calculate PMI Score for the Common Syntactic Subjects
+    #REF1 https://www.listendata.com/2022/06/pointwise-mutual-information-pmi.html#steps_to_calculate_pmi
+    #REF2 https://blog.devgenius.io/pointwise-mutual-information-calculation-00d9a64be7ab
+    #REF3 https: // stats.stackexchange.com / questions / 518426 / simple - numeric - example - to - understand - pointwise - mutual - information
+
+    #For the PMI calculation as mentioned in simple example/explanation REF 3
+    #(1) Need to obtain the number of tokens in each novel text
+    #(2) Need the probability of word1 (for e.g subject in the novel text)
+    #(3) Need the probability of word2 (for e.g verb in the novel text)
+    #(4) Need the probability of word1 and work2
+    # PMI formula is:   PMI(w1, w2) = log2(P(w1, w2) / (P(w1) * P(w2)))
+
+    if verbCount > 0 and subjectCount > 0:
+        prob_of_word1_and_word2 = sum(syntactic_subjects.values()) / noOfTokensCount
+        prob_of_word_1 =  subjectCount / noOfTokensCount
+        prob_of_word_2 =  verbCount / noOfTokensCount
+        pmi = math.log2(prob_of_word1_and_word2 / (prob_of_word_1 * prob_of_word_2))
+        print("pmi:",pmi)
+
+    return pmi
+
 
 # f (iii) The title of each novel and a list of the ten most common syntactic subjects of the verb "hear" (in any tense)
 # in the text, ordered by their Pointwise Mutual Information
 
 def subjects_by_verb_pmi(doc, target_verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
-    """
-     Args:
-            doc:  dataframe colunn containing tokenized and parsed spacy doc  
-            target_verb: verb to find common subjects for
-     Returns:
-            list: List containing common subjects for the specified verb and ordered by PMI score
-    """
-    # REF-https://stackoverflow.com/questions/66181946/identify-subject-in-sentences-using-spacy-in-advanced-cases
-    # REF-https://spacy.io/usage/linguistic-features#dependency-parse  - The example table showed subjects, verbs and
-    # children in relation to subject.
-    # REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
-    # https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
 
-    itemList = []
-
-    # counting syntactic subjects
-    syntactic_subjects = Counter()
-
-    for token in doc:
-        if token.lemma_ == "hear":  # FOR DEBUG - SHOWS ALL AVAILABLE DEPENDENCIES FOR DIFF TENSES OF VERB "Hear"
-            # Show subject dependencies for Verb "hear" in different tenses (using lemma for "hear")
-            if token.dep_ in (
-            "nsubj", "nsubjpass", "csubj", "csubjpass") and token.pos_ == "VERB" and token.lemma_ == target_verb:
-                # head = token.head.text
-                # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to
-                # other words in the text
-                # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy;
-                # nsubj - nominal subject, nsubjpass - nominal subject passive, csubj - clausal subject,
-                # csubjpass - clausal subject passive
-                print(token.head.text, token.dep_, token.pos_, token.text, token.lemma_)  # FOR DEBUG
-                syntactic_subjects[token.head.text, token.dep_, token.text, token.lemma_] += 1
-                itemList.append([syntactic_subjects])
-
-    # printing the 10 most common syntactic subjects for the target verb "to hear" in the text
-    print("10 MOST COMMON SYNTACTIC SUBJECTS FOR VERB  : " + target_verb + " ORDERED BY PMI SCORE")
-
-    #Calculate PMI Score for the Common Syntactic Subjects STILL TO DO !
-
-
-    return itemList
+    pass
 
 
 # (f) (ii) The title of each novel and a list of the ten most common syntactic subjects of the verb "to hear" in any tense
@@ -465,7 +462,7 @@ def subjects_by_verb_count(doc, verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
     """
             Args:
-                doc:  dataframe colunn containing tokenized and parsed spacy doc  
+                doc:  dataframe column containing tokenized and parsed spacy doc  
                 verb: verb to find common subjects for
             Returns:
                 list: List containing common subjects for the specified verb
@@ -475,7 +472,7 @@ def subjects_by_verb_count(doc, verb):
     # REF-https://spacy.io/usage/linguistic-features#dependency-parse  - The example table showed subjects, verbs and
     # children in relation to subject.
     # REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
-    # https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
+    # https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what an Object and Subject is
 
     itemList = []
 
@@ -495,7 +492,7 @@ def subjects_by_verb_count(doc, verb):
             # csubjpass - clausal subject passive
             print(token.head.text, token.dep_, token.pos_, token.text, token.lemma_) #FOR DEBUG
             syntactic_subjects[token.head.text, token.dep_, token.text, token.lemma_] += 1
-            itemList.append([syntactic_subjects])
+            itemList.append([syntactic_subjects.most_common(10)])
 
     # printing the 10 most common syntactic subjects for the verb "to hear" in the text
     print("10 MOST COMMON SYNTACTIC SUBJECTS FOR VERB : " + verb)
