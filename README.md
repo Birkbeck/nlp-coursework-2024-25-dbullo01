@@ -3,3 +3,15 @@
 template for NLP module coursework
 
 Davison Bullock
+
+Academic Declaration
+
+"I have read and understood the sections of plagiarism in the college
+Policy on assessment offences and confirm that the work is my own, 
+with the work of others clearly acknowledged. I give my permission 
+to submit my report to the plagiarism testing database that the 
+College is using and to test it using plagiarism detection software,
+search engines or meta-searching software"
+
+This refers to the document at:
+https://www.bbk.ac.uk/student-services/exams/plagiarism-guidelines
