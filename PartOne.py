@@ -624,7 +624,7 @@ def subjects_by_verb_count(doc, verb):
             # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy;
             # nsubj - nominal subject, nsubjpass - nominal subject passive, csubj - clausal subject,
             # csubjpass - clausal subject passive
-            print(token.head.text, token.dep_, token.pos_, token.text, token.lemma_) #FOR DEBUG
+            #print(token.head.text, token.dep_, token.pos_, token.text, token.lemma_) #FOR DEBUG UNCOMMENT OF YOU WOULD LIKE TO SEE VALUES
             syntactic_subjects[token.head.text, token.dep_, token.text, token.lemma_] += 1
             itemList.append([syntactic_subjects.most_common(10)])
 
