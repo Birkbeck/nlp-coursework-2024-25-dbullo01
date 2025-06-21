@@ -411,6 +411,26 @@ def cooccurrence_matrix(text):
     print(cooccurrence)
     return cooccurrence
 
+
+
+
+
+def countNoOfTokensInDoc(doc):
+    """ count the no of tokens in document
+
+    Args:
+        doc:
+
+    Returns:
+        noOfTokens: integer count of no of tokens in document
+    """
+    noOfTokens = 0
+    for token in doc:
+        noOfTokens = noOfTokens + 1
+
+    return noOfTokens
+
+
 def calculate_pmi(verbCount, subjectCount, noOfTokensCount, syntactic_subjects):
     """ Calculate pmi score
 
