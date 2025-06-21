@@ -17,6 +17,6 @@ to have a higher reading score (difficult to read) by the reading formula. Thus 
 not handle difficulty of words well in the English language for the different readers (e.g. school children,
 university students)
 
-Secondly reliability of grading level score varies according to the sample of text in a document. The scope for one part
+Secondly reliability of grading level score varies according to the sample of text in a document. The score for one part
 of a document might vary from the score calculated for another part of the same document. Hence the reliability between
 different sections of the document varies.
