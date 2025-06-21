@@ -509,8 +509,84 @@ def calculate_pmi(verbCount, subjectCount, noOfTokensCount, syntactic_subjects):
 
 def subjects_by_verb_pmi(doc, target_verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
+    """
+     Args:
+            doc:  dataframe colunn containing tokenized and parsed spacy doc  
+            target_verb: verb to find common subjects for
+     Returns:
+            list: List containing common subjects for the specified verb and ordered by PMI score
+    """
+    # REF-https://stackoverflow.com/questions/66181946/identify-subject-in-sentences-using-spacy-in-advanced-cases
+    # REF-https://spacy.io/usage/linguistic-features#dependency-parse  - The example table showed subjects, verbs and
+    # children in relation to subject.
+    # REF What is Subject, Verb, Object, Complement, Modifier: Grammatical Functions [basic English grammar]
+    # https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
+    # REF https://stats.stackexchange.com/questions/518426/simple-numeric-example-to-understand-pointwise-mutual-information
 
-    pass
+    itemList = []
+    verbList = []
+    subjectList = []
+
+    # counting syntactic subjects
+    syntactic_subjects = Counter()      #Required for PMI formula calculation (required for joint probability calculation of word 1 and 2)
+    syntactic_subjects2 = Counter()
+
+    # counting_verb_occurence in a novel text
+    verb_occurrence_count_in_the_novel = Counter()    #Required for PMI formula calculation (required for probablity of word1 in novel calc)
+
+    #Counting subject occurrence in a novel text
+    subject_occurrence_count_in_the_novel = Counter()  #Required for PMI formula calculation (required for probablity of word2 in novel calc)
+
+    # count of number of tokens in novel text
+    token_count_in_novel = Counter()    #Required for PMI formula calculation (Required for probablity calcs of word 1 and word2 in a novel text)
+
+    verbCount = 0
+    subjectCount = 0
+    noOfTokensCount = 0
+    pmi = 0.0
+
+
+    for token in doc:
+        # FOR DEBUG - SHOWS ALL AVAILABLE DEPENDENCIES FOR DIFF TENSES OF VERB "Hear"
+        # Show subject dependencies for Verb "hear" in different tenses (using lemma for "hear")
+        if token.lemma_ == target_verb:
+            if token.dep_ in (
+            "nsubj", "nsubjpass", "csubj", "csubjpass") and token.pos_ == "VERB":
+                # head = token.head.text
+                # The Verb is the head and dep_ represents the branch(es) in the dependency diagram from head (verb) to
+                # other words in the text
+                # Branch could be going to a word that could be a subject. There are 4 types of subject in SpaCy;
+                # nsubj - nominal subject, nsubjpass - nominal subject passive, csubj - clausal subject,
+                # csubjpass - clausal subject passive
+                print(token.head.text, token.dep_, token.pos_, token.text, token.lemma_)  # FOR DEBUG
+                #syntactic_subjects[token.head.text, token.dep_, token.text, token.lemma_] += 1
+                syntactic_subjects[(token.head.text, token.lemma_)] += 1
+                #itemList.append(syntactic_subjects.most_common(10))
+
+                if sum(syntactic_subjects.values()) >= 1:
+                    #verb occurrence count in the novel (doc)
+                    verbCount = countSpecificVerbInDoc(doc, token.lemma_)
+                    #subject occurrence count in the novel (doc)
+                    subjectCount = countSpecificSubjectInDoc(doc, token.head.text)
+                    #count no of tokens in the novel (doc)
+                    noOfTokensCount = countNoOfTokensInDoc(doc)
+                    pmi_value = calculate_pmi(verbCount, subjectCount, noOfTokensCount, syntactic_subjects)
+                    syntactic_subjects2[(token.head.text, token.lemma_),pmi_value] += 1
+
+
+                    #print("No of subject-verb pairs %d :" % (sum(syntactic_subjects.values())))  # FOR DEBUG PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE VALUE  # FOR DEBUG UNCOMMENT TO SEE VALUE
+                    #print("No of verb occurrences %d :" % verbCount)  # FOR DEBUG PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE VALUE           # FOR DEBUG UNCOMMENT TO SEE VALUE
+                    #print("No of subject occurrences %d :" % subjectCount)  # FOR DEBUG PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE VALUE     # FOR DEBUG UNCOMMENT TO SEE VALUE
+                    #print("No of tokens in novel text %d" % noOfTokensCount)  # FOR DEBUG PLEASE UNCOMMENT IF T+YOU WOULD LIKE TO SEE VALUE # FOR DEBUG UNCOMMENT TO SEE VALUE
+
+                    #syntactic_subjects = syntactic_subjects + (pmi_value,)
+                    itemList.append(syntactic_subjects2.most_common(10))
+
+    # printing the 10 most common syntactic subjects for the target verb "to hear" in the text
+    print("10 MOST COMMON SYNTACTIC SUBJECTS FOR VERB  : " + target_verb + " ORDERED BY PMI SCORE")
+
+    return itemList
+
 
 
 # (f) (ii) The title of each novel and a list of the ten most common syntactic subjects of the verb "to hear" in any tense
