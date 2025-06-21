@@ -412,6 +412,27 @@ def cooccurrence_matrix(text):
     return cooccurrence
 
 
+
+def countSpecificSubjectInDoc(doc, subjectToFindAndCountInDoc):
+    """ count of subject in document
+
+    Args:
+        doc: document to search
+        subjectToFindAndCountInDoc:  integer count of no of occurrences of subject in document
+
+    Returns:
+        count of subject occurrences in the document (integer value)
+    """
+    specificSubjectOccurrences = Counter()
+    for token in doc:
+        if token.text == subjectToFindAndCountInDoc:
+            specificSubjectOccurrences[(subjectToFindAndCountInDoc)] += 1
+
+    return sum(specificSubjectOccurrences.values())
+
+
+
+
 def countSpecificVerbInDoc(doc, verbToFindAndCountInDoc):
     """ count of verb in document
 
