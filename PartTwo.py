@@ -239,7 +239,7 @@ def tokenize_text2(text):
     tokens = word_tokenize(text)
 
     # Stemming of the words the text to remove inflections such as (e.g.  ing, s, ed. Using nltk Porterstemmer
-    # Join the tokens back to create text. COMMENTED OUT CODE AS IT LOWERED Macro average F1 Score
+    # Join the tokens back to create text.
     stemmedwords = stemmer2(tokens)
     text = " ".join(stemmedwords)
     ##print(text)  #FOR DEBUG TO SEE THE STEMMED TEXT
