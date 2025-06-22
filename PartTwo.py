@@ -520,7 +520,7 @@ def ExtractFeatures_with_custom_tokenizer(X_train, X_test, y_train, y_test):
         ngram_range=(1, 2),
         #stop_words=None,            #stop words handled by tokenizer_text() custom function
         #lowercase=False,            #lowercase handled by tokenizer_text() custom function
-        tokenizer=tokenize_text,    #calls custom tokenizer and preprocesses and then tokenizes text
+        tokenizer=tokenize_text2,    #calls custom tokenizer and preprocesses and then tokenizes text
         analyzer='word',
     )
     X_train_extracted_features = vectorizer.fit_transform(X_train)
