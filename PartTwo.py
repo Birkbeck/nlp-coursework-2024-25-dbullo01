@@ -453,7 +453,7 @@ def ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test):
         vectorizer = TfidfVectorizer(
             max_features=3000,
             ngram_range=(1, 2),
-            stop_words="english"
+            stop_words="english",
         )
         X_train_extracted_features = vectorizer.fit_transform(X_train)
         duration_train = time() - t0
@@ -660,7 +660,7 @@ def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
 
     parameter_grid = {
         "vect__ngram_range": ((1,1),(1,2),(1,3)),  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
-        ##"clf__C": (0.01, 0.1, 1, 10, 100),
+        ##"clf__C": (0.01, 0.1, 1, 10, 100),  #Was used to find optimal parameter cost value for LinearSVC
     }
 
     random_search = RandomizedSearchCV(
@@ -708,6 +708,76 @@ def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
     #print(f"Accuracy on test set: {test_accuracy:.3f}")
 
     return
+
+def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
+    """ Hyperparameter tuning for the tfidfVectoriser that uses the custom tokenize_text2() tokenzier
+
+    Args:
+        X_train:
+        X_test:
+        y_train
+        y_test:
+
+    Returns:
+        None
+    """
+    #Classification of text documents using sparse features
+    #REF - https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html
+    #Sample pipeline for text feature extraction and evaluation
+    #REF - https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_text_feature_extraction.html
+
+    pipeline2 = Pipeline(
+        [
+            ("vect", TfidfVectorizer(token_pattern=None)),   #Set token pattern to none to prevent warnings from using custom tokenizer durimg multiple fits
+            ("clf", LinearSVC(class_weight="balanced")),
+        ]
+    )
+
+    parameter_grid2 = {
+        "vect__tokenizer": [tokenize_text2],
+        "vect__ngram_range": [(1,3)],  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
+        "vect__min_df": [3,4,5],
+        "vect__max_features": [3000],
+        ##"clf__C": (0.01, 0.1, 1, 10, 100),   #Was used to find optimal parameter cost value for LinearSVC
+    }
+
+    random_search = RandomizedSearchCV(
+        estimator=pipeline2,
+        param_distributions=parameter_grid2,
+        n_iter=6,
+        random_state=0,
+        n_jobs=2,
+        verbose=1
+    )
+    print("Performing grid search...")
+    print("Hyperparameters to be evaluated:")
+    pprint(parameter_grid2)
+
+    t0 = time()
+    random_search.fit(X_train,y_train)
+    duration_of_fitting = time() - t0
+    print("duration of fitting: %.3f s" % duration_of_fitting)
+
+    print("Best parameters combination found:")
+    best_parameters = random_search.best_estimator_.get_params()
+    for param_name in sorted(parameter_grid2.keys()):
+        print(f"{param_name}:", {best_parameters[param_name]})
+
+
+    t0 = time()
+    predictions = random_search.predict(X_test)
+    testing_duration_time = time() - t0
+
+
+    # Print the classification report and macro_average f1 score
+    class_report = classification_report(y_test, predictions, zero_division=0)
+    macro_average_f1_score = f1_score(y_test, predictions, average="macro", zero_division=0)
+    print("classification report:")
+    print(class_report)
+    print("macro average f1 score:", macro_average_f1_score)
+
+
+
 
 
 
@@ -797,3 +867,11 @@ if __name__ == "__main__":
     print("Training classification models")
     print("")
     classifier_pipeline(X_train_extracted_features3, y_train3, X_test_extracted_features3, y_test3)
+
+    print("")
+    print("")
+    print("Hyperparameter tuning for the LinearSVC and TfidfVectorizer (vectoriser) using customer tokenizer(s)")
+    print("")
+    pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test)
+
+
