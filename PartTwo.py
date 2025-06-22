@@ -849,9 +849,6 @@ def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
 
 
 
-
-
-
 if __name__ == "__main__":
     """
         uncomment the following lines to run the functions once you have completed them 
@@ -921,11 +918,11 @@ if __name__ == "__main__":
 
 
 
-    print("")
-    # print("Loading Data and Feature Extraction using TfidfVectorizer")
-    print("Loading Data")
-    print("")
-    X_train, X_test, y_train, y_test = LoadData(df)
+#    print("")
+#    # print("Loading Data and Feature Extraction using TfidfVectorizer")
+#    print("Loading Data")
+#    print("")
+#    X_train, X_test, y_train, y_test = LoadData(df)
 
     print("")
     print("Feature Extraction using TfidfVectorizer")
@@ -941,12 +938,12 @@ if __name__ == "__main__":
 
     print("")
     print("")
-    print("Hyperparameter tuning for the LinearSVC and TfidfVectorizer (vectoriser) using customer tokenizer(s)")
+    print("Hyperparameter tuning for the LinearSVC and TfidfVectorizer (vectoriser) that uses my customer tokenizer- tokenize_text2")
     print("")
     pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test)
 
     print("")
-    print("Feature Extraction using TfidfVectorizer and tuned Hyper-parameters and Custom Tokenizer - TokenizeText2()")
+    print("Feature Extraction using TfidfVectorizer and tuned Hyper-parameters and Custom Tokenizer - tokenize_text2")
     print("")
     X_train_extracted_features4, X_test_extracted_features4, y_train4, y_test4, feature_names4 = ExtractFeatures_with_custom_tokenizer_using_tuned_hyperparameters(
         X_train,
