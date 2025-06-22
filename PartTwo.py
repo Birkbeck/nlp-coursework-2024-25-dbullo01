@@ -209,6 +209,57 @@ def tokenize_text(text):
     return new_word_tokens
 
 
+def tokenize_text2(text):
+    """ custom tokenizer that preprocess text for input to the TftdfVectorizer
+
+        Args:
+            text: text to clean and tokenize
+
+        Returns:
+            text: text that is cleaned and has been tokenized
+    """
+
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+    # REF - Lab 7 video and in class code demonstration Week 7 and Week 3 Lab code
+
+    #nltk.download("stopwords")   UNCOMMENT IF YOU REQUIRE INSTALL
+
+    # Remove accents from text
+    text = remove_accents(text)
+
+    # Remove special characters from the text - Want to remove anything not alphanumeric. Want to preserve digits
+    # an example is reference to date and time in a speech which is relevant context in a speech
+    text = remove_special_chars(text)
+
+    # Remove additional whitespace characters
+    text = remove_additional_whitespace_characters(text)
+
+    # Create tokens to use with stemmer
+    tokens = word_tokenize(text)
+
+    # Stemming of the words the text to remove inflections such as (e.g.  ing, s, ed. Using nltk Porterstemmer
+    # Join the tokens back to create text. COMMENTED OUT CODE AS IT LOWERED Macro average F1 Score
+    stemmedwords = stemmer2(tokens)
+    text = " ".join(stemmedwords)
+    ##print(text)  #FOR DEBUG TO SEE THE STEMMED TEXT
+
+    # Using nltk sentence tokenizer to tokenize text to sentences and then nltk word tokenizer
+    # to tokenize sentences to words. Excluding / removing punctuation (tokens)
+    sentences = sent_tokenize(text)
+    word_tokens = [word_tokenize(sentence.lower()) for sentence in sentences]
+
+    # flatten nested list so that there is no sublists
+    word_tokens_flattened = flatten_nested_list(word_tokens)
+
+    # Using nltk stopwords list (english language) to later remove stopwords from text
+    stopword_list = set(nltk.corpus.stopwords.words('english'))  #Returns stopwprds list
+
+    #Removing stopwords - It was decided to retain numbers for context but remove stop words as token.isalpha lowered macro average f1 score)
+    new_word_tokens = [token for token in word_tokens_flattened if token not in stopword_list]
+    return new_word_tokens
+
+
 
 def remove_accents(text):
     """
