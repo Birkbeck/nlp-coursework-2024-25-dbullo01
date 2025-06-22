@@ -547,6 +547,75 @@ def ExtractFeatures_with_custom_tokenizer(X_train, X_test, y_train, y_test):
     return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
 
+def ExtractFeatures_with_custom_tokenizer_using_tuned_hyperparameters(X_train, X_test, y_train, y_test):
+    # (e) Implement a new custom tokenizer and pass it to the tokenizer argument of TfidfVectorizer.
+    # You can use this function in any way ypu like to try to achieve the best classification
+    # performance while keeping the number of features to no more than 3000, and using the same
+    # three classifiers as above. Print the classification report for the best performing classifier
+    # using your tokenizer. Marks will be awarded both for a high overall classification performance,
+    # and a good trade-off between classification performance and efficiency (i.e., using fewer parameters [DOING]
+    # REF https://code.likeagirl.io/good-train-test-split-an-approach-to-better-accuracy-91427584b614 for the types of
+    # train test splits
+    # REF https://builtin.com/data-science/train-test-split#:~:text=Stratified%20Splitting&text=This%20creates%20training%20and%20testing,categories%20aren't%20represented%20equally.
+    # for what stratified sampling means
+    # REF https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
+    # for parameters and their defaults and what max_features and stratified means
+
+    """Load data
+
+        Args:
+            X_train:
+            X_test:
+            y_train:
+            y_test:
+        Returns:
+            X_train_extracted_features: Extracted tf-idf features from training data
+            X_test_extracted_features: Extracted tf-idf features from testing data
+            y_train:  labels training data
+            y_test:  labels testing data
+            features:
+    """
+
+    # REF https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html for examples
+    # of extracting features for train and test data using TfIdfVectorizer
+
+    # Extracting features using a sparse vectorizer TfIdf
+    # Using bi-grams instead of uni-grams or tri-grams as bi-grams performed best during hyperparameter tuning
+    t0 = time()
+    vectorizer = TfidfVectorizer(
+        max_features=3000,
+        ngram_range=(1, 2),
+        min_df=3,
+        #stop_words=None,            #stop words handled by tokenizer_text() custom function
+        #lowercase=False,            #lowercase handled by tokenizer_text() custom function
+        tokenizer=tokenize_text2,    #calls custom tokenizer and preprocesses and then tokenizes text
+        analyzer='word',
+    )
+    X_train_extracted_features = vectorizer.fit_transform(X_train)
+    duration_train = time() - t0
+    print("train time %f " % duration_train)
+
+    # Extracting features from the test data using the same vectorizer
+    t0 = time()
+    X_test_extracted_features = vectorizer.transform(X_test)
+    duration_test = time() - t0
+    print("test time %f " % duration_test)
+
+    feature_names = vectorizer.get_feature_names_out()
+
+    print(f"{len(X_train)} documents (training set)")  # FOR DEBUG
+    print(f"{len(X_test)} documents (testing set)")  # FOR DEBUG
+    print("Vectorise training done: %f" % duration_train, " seconds")  # FOR DEBUG
+    print("X_train n_samples: ", pd.DataFrame(X_train).shape[0], "X_train n_features:",
+          pd.DataFrame(X_train).shape[1])  # FOR DEBUG
+    print("Vectorise testing done: %f" % duration_test, " seconds")  # FOR DEBUG
+    print("X_test n_samples: ", pd.DataFrame(X_test).shape[0], "X_test n_features:",
+          pd.DataFrame(X_test).shape[1])  # FOR DEBUG
+
+    return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
+
+
+
 # (c) Train RandomForest (with n_estimators=300) and SVM with linear kernel classifiers on the training set,
     # and print the scikit-learn macro-average f1 score and classification report for each classifier on the test set.
     # The label that you are trying to predict is the 'party' value
@@ -632,6 +701,8 @@ def classifier_pipeline(X_train, y_train, X_test, y_test):
         print("=" * 80)
         print(classifier_name)
         classification_results.append(benchmark_classification_models(classifier,classifier_name,X_train, y_train, X_test, y_test))
+
+
 
 
 def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
@@ -874,4 +945,16 @@ if __name__ == "__main__":
     print("")
     pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test)
 
+    print("")
+    print("Feature Extraction using TfidfVectorizer and tuned Hyper-parameters and Custom Tokenizer - TokenizeText2()")
+    print("")
+    X_train_extracted_features4, X_test_extracted_features4, y_train4, y_test4, feature_names4 = ExtractFeatures_with_custom_tokenizer_using_tuned_hyperparameters(
+        X_train,
+        X_test,
+        y_train,
+        y_test)
 
+    print("")
+    print("Training classification models")
+    print("")
+    classifier_pipeline(X_train_extracted_features4, y_train4, X_test_extracted_features4, y_test4)
