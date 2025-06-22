@@ -288,7 +288,27 @@ def stemmer(text):
     ps.stem(text)
     return text
 
+def stemmer2(tokens):
+    """ Stem word to remove inflections
 
+    Args:
+        text: input tokens (words) to stem
+
+    Returns:
+        list : list of stemmed words as tokens
+
+    Called by:
+        tokenize_text() function
+    """
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+
+    stemmedwords = []
+    ps = PorterStemmer()
+    for word in tokens:
+        stemmed_word = ps.stem(word)
+        stemmedwords.append(stemmed_word)
+    return stemmedwords
 
 def ExtractFeatures(X_train, X_test, y_train, y_test):
     # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
