@@ -23,6 +23,7 @@ from nltk.tokenize import sent_tokenize
 import nltk.corpus
 import string
 
+
 # Part Two - Feature Extraction and Classification
 
 # In the second part of the coursework, your task is to train and test machine learning classifiers on a dataset of
@@ -193,7 +194,7 @@ def tokenize_text(text):
     # Stemming of the words the text to remove inflections such as (e.g.  ing, s, ed. Using nltk Porterstemmer
     text = stemmer(text)
 
-    # Using spaCy sentence tokenizer to tokenize text to sentences and then spaCy word tokenizer
+    # Using nltk sentence tokenizer to tokenize text to sentences and then spaCy nltk tokenizer
     # to tokenize sentences to words
     sentences = sent_tokenize(text)
     word_tokens = [word_tokenize(sentence.lower()) for sentence in sentences]
@@ -202,6 +203,7 @@ def tokenize_text(text):
     word_tokens_flattened = flatten_nested_list(word_tokens)
 
     # Using nltk stopwords list (english language) to remove stopwords from text
+    #Removing stopwords - It was decided to retain numbers for context but remove stop words as token.isalpha lowered macro average f1 score)
     stopword_list = nltk.corpus.stopwords.words('english')
     new_word_tokens = [token for token in word_tokens_flattened if token not in stopword_list]
     return new_word_tokens
@@ -704,3 +706,23 @@ if __name__ == "__main__":
     print("Training classification models")
     print("")
     classifier_pipeline(X_train_extracted_features2, y_train2, X_test_extracted_features2, y_test2)
+
+
+
+    print("")
+    # print("Loading Data and Feature Extraction using TfidfVectorizer")
+    print("Loading Data")
+    print("")
+    X_train, X_test, y_train, y_test = LoadData(df)
+
+    print("")
+    print("Feature Extraction using TfidfVectorizer")
+    print("")
+    X_train_extracted_features3, X_test_extracted_features3, y_train3, y_test3, feature_names3 = ExtractFeatures_with_custom_tokenizer(X_train,
+                                                                                                            X_test,
+                                                                                                            y_train,
+                                                                                                            y_test)
+    print("")
+    print("Training classification models")
+    print("")
+    classifier_pipeline(X_train_extracted_features3, y_train3, X_test_extracted_features3, y_test3)
