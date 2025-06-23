@@ -168,7 +168,8 @@ def flatten_nested_list(nested_list):
 # and a good trade-off between classification performance and efficiency (i.e. using fewer parameters)
 
 def tokenize_text(text):
-    """ custom tokenizer that preprocess text for input to the TftdfVectorizer
+    """ custom tokenizer that preprocess text for input to the TftdfVectorizer. First attempt. This one uses (calls)
+        my first attempt at a stemming function e.g. stemmer(text) and doesnt stem each word.
 
         Args:
             text: text to clean and tokenize
@@ -210,7 +211,8 @@ def tokenize_text(text):
 
 
 def tokenize_text2(text):
-    """ custom tokenizer that preprocess text for input to the TftdfVectorizer
+    """ custom tokenizer that preprocess text for input to the TftdfVectorizer including calling an improved
+        stemmer function called stemmer2()
 
         Args:
             text: text to clean and tokenize
