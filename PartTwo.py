@@ -804,7 +804,9 @@ def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
 
 # Part of 2(e)
 # Trying to find the best parameters for TfidVectoriser with custom tokenizer to improve classification performance
-# Also shows previous hyperparameter tuning for cost function of LinearSVC classifier
+# Also shows previous hyperparameter tuning for cost function of LinearSVC classifier (commented out to save fitting models
+# time using CV). Optimal cost function (C) parameter was found to be 0.1 and was used in classifier_pipeline()
+# LinearSVC classifier parameters
 def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
     """ Hyperparameter tuning for the tfidfVectoriser that uses the custom tokenize_text2() tokenzier
 
