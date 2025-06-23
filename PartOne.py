@@ -79,9 +79,6 @@ def fk_level(text, d):
     return FK_grade_level_score
 
 
-
-
-
 def count_syl(word, d):
     """Counts the number of syllables in a word given a dictionary of syllables per word.
     if the word is not in the dictionary, syllables are estimated by counting vowel clusters
@@ -441,7 +438,7 @@ def countSpecificVerbInDoc(doc, verbToFindAndCountInDoc):
         verbToFindAndCountInDoc: integer count of no of occurrences of verb in document
 
     Returns:
-         count of verg occurrences in the document (integer value)
+         count of verb occurrences in the document (integer value)
 
     """
     specificVerbOccurrences = Counter()
@@ -454,17 +451,23 @@ def countSpecificVerbInDoc(doc, verbToFindAndCountInDoc):
 
 
 def countNoOfTokensInDoc(doc):
-    """ count the no of tokens in document
+    """ count the no of tokens in text represented as spaCy document that do not contain punctuation
 
     Args:
-        doc:
+        doc: Text converted  to spaCy document to identify token type and to only count tokens that are no punctuation
 
     Returns:
         noOfTokens: integer count of no of tokens in document
     """
+
+    nlp = spacy.load("en_core_web_sm")
+    doc = nlp(doc)
+
+    # Want to count only tokens that are NOT punctuation tokens. (For PMI calculation)
     noOfTokens = 0
     for token in doc:
-        noOfTokens = noOfTokens + 1
+        if not token.is_punct:
+            noOfTokens += 1
 
     return noOfTokens
 
@@ -499,7 +502,7 @@ def calculate_pmi(verbCount, subjectCount, noOfTokensCount, syntactic_subjects):
         prob_of_word_1 =  subjectCount / noOfTokensCount
         prob_of_word_2 =  verbCount / noOfTokensCount
         pmi = math.log2(prob_of_word1_and_word2 / (prob_of_word_1 * prob_of_word_2))
-        print("pmi:",pmi)
+        #print("pmi:",pmi)   #FOR DEBUG PLEASE UNCOMMENT IF YOU WOULD LIKE TO VIEW THE VALUE
 
     return pmi
 
@@ -511,7 +514,7 @@ def subjects_by_verb_pmi(doc, target_verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
     """
      Args:
-            doc:  dataframe colunn containing tokenized and parsed spacy doc  
+            doc:  dataframe column containing tokenized and parsed spacy doc  
             target_verb: verb to find common subjects for
      Returns:
             list: List containing common subjects for the specified verb and ordered by PMI score
@@ -524,21 +527,10 @@ def subjects_by_verb_pmi(doc, target_verb):
     # REF https://stats.stackexchange.com/questions/518426/simple-numeric-example-to-understand-pointwise-mutual-information
 
     itemList = []
-    verbList = []
-    subjectList = []
 
     # counting syntactic subjects
     syntactic_subjects = Counter()      #Required for PMI formula calculation (required for joint probability calculation of word 1 and 2)
     syntactic_subjects2 = Counter()
-
-    # counting_verb_occurence in a novel text
-    verb_occurrence_count_in_the_novel = Counter()    #Required for PMI formula calculation (required for probablity of word1 in novel calc)
-
-    #Counting subject occurrence in a novel text
-    subject_occurrence_count_in_the_novel = Counter()  #Required for PMI formula calculation (required for probablity of word2 in novel calc)
-
-    # count of number of tokens in novel text
-    token_count_in_novel = Counter()    #Required for PMI formula calculation (Required for probablity calcs of word 1 and word2 in a novel text)
 
     verbCount = 0
     subjectCount = 0
@@ -572,7 +564,6 @@ def subjects_by_verb_pmi(doc, target_verb):
                     noOfTokensCount = countNoOfTokensInDoc(doc)
                     pmi_value = calculate_pmi(verbCount, subjectCount, noOfTokensCount, syntactic_subjects)
                     syntactic_subjects2[(token.head.text, token.lemma_),pmi_value] += 1
-
 
                     #print("No of subject-verb pairs %d :" % (sum(syntactic_subjects.values())))  # FOR DEBUG PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE VALUE  # FOR DEBUG UNCOMMENT TO SEE VALUE
                     #print("No of verb occurrences %d :" % verbCount)  # FOR DEBUG PLEASE UNCOMMENT IF YOU WOULD LIKE TO SEE VALUE           # FOR DEBUG UNCOMMENT TO SEE VALUE
