@@ -5,6 +5,9 @@ texts/novels/
 texts/speeches/
 
 
+# Ignore pickle file(s)
+pickles/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
