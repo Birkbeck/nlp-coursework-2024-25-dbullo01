@@ -424,7 +424,8 @@ def ExtractFeatures(X_train, X_test, y_train, y_test):
 # this consideration was done using the function pipeline_for_hyperparameter_tuning() (so please also seee that function also
 # for the tuned hyperparamter used in ExtractFeatures_bi_grams()) function, limiting the total number of features to 3000.
 # Print the classification report as in 2(c) again using these parameters. The ExtractFeatures_bi_grams() function
-# uses the tuned ngram_range = (1,2) hyperparameter
+# uses the tuned ngram_range = (1,2) hyperparameter. This function below uses the default tokenizer of the TfidIdfVectorizer
+# and NOT the custom tokenizer
 
 def ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test):
         # (d) Adjust the parameters of the TfidVectorizer so that uni-grams, bi-grams and tri-grams will be considered
