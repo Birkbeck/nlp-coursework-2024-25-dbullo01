@@ -489,7 +489,7 @@ def ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test):
 
 
 # Part of 2 (e) - Feature extraction below uses tuned hyperparameter ngram_range= (1, 2) in the TfidVectoriser (that
-# also uses a custom tokenizer)
+# also uses a custom tokenizer called tokenize_text2 which considers/uses stemmed text amongst other preprocessing steps)
 def ExtractFeatures_with_custom_tokenizer(X_train, X_test, y_train, y_test):
     # (e) Implement a new custom tokenizer and pass it to the tokenizer argument of TfidfVectorizer.
     # You can use this function in any way ypu like to try to achieve the best classification
