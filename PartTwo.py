@@ -264,7 +264,7 @@ def tokenize_text2(text):
 
 
 def remove_accents(text):
-    """
+    """ Removed accents from accented text
     Args:
         text: text to remove accent(s) from characters using unicodedata library
 
