@@ -351,7 +351,7 @@ def stemmer2(tokens):
         list : list of stemmed words as tokens
 
     Called by:
-        tokenize_text() function
+        tokenize_text2() function
     """
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
