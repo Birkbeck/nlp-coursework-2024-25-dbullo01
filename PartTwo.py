@@ -885,6 +885,9 @@ if __name__ == "__main__":
 
     df = read_speeches(path=Path.cwd() / "texts" / "speeches")
 
+    # My directory path looks like this
+    # C:\Users\db570\PycharmProjects\NLP_Coursework_2025\nlp-coursework-2024-25-dbullo01\texts\speeches
+
     print("")
     # print("Loading Data and Feature Extraction using TfidfVectorizer")
     print("Loading Data")
