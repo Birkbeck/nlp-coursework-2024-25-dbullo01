@@ -212,7 +212,7 @@ def tokenize_text(text):
 
 def tokenize_text2(text):
     """ custom tokenizer that preprocess text for input to the TftdfVectorizer including calling an improved
-        stemmer function called stemmer2()
+        stemmer function called stemmer2(). Stemmer2() stems each word in text
 
         Args:
             text: text to clean and tokenize
