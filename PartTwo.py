@@ -272,7 +272,7 @@ def remove_accents(text):
         text: text with accent(s) removed from characters
 
     Called by:
-        tokenize_text() function
+        tokenize_text() and tokenize_text2() functions
 
     """
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
