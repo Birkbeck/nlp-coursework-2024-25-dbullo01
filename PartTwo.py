@@ -560,7 +560,7 @@ def ExtractFeatures_with_custom_tokenizer(X_train, X_test, y_train, y_test):
 
 
 # Part 2 (e) Further attempt to extract features but this time using TfidfVectorizer (that uses custom tokenizer called
-# tokenize_text2 that does preprocessing including detmming of text instead of the default tokenizer)
+# tokenize_text2 that does preprocessing including stemming of text instead of the default tokenizer)
 # this attempt uses tuned hyperparameter ngram_range=(1, 2) and min_df=3. Min_df using pipeline_for_hyperparameter_tuning2()
 # min_df=3 was eventually commented out in function below as it lowered macro average f1 score. The tokenize_text2 tokenizer uses text that has been preprocessed
 # including stemming of each word in the text which resulted in higher macro average f1 score when classifying speeches
