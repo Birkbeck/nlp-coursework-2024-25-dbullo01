@@ -417,7 +417,15 @@ def ExtractFeatures(X_train, X_test, y_train, y_test):
 
     return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
-#def ExtractFeatures_bi_grams(df):
+
+
+# Part of 2 (d)
+# Adjust the parameters of the TfidVectorizer so that unigrams, bi-grams and tri-grams will be considered as features (NB.
+# this consideration was done using the function pipeline_for_hyperparameter_tuning() (so please also seee that function also
+# for the tuned hyperparamter used in ExtractFeatures_bi_grams()) function, limiting the total number of features to 3000.
+# Print the classification report as in 2(c) again using these parameters. The ExtractFeatures_bi_grams() function
+# uses the tuned ngram_range = (1,2) hyperparameter
+
 def ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test):
         # (d) Adjust the parameters of the TfidVectorizer so that uni-grams, bi-grams and tri-grams will be considered
         #     as features, limiting the total number of features to 3000. Print the classification report as in 2(c) again
@@ -479,7 +487,8 @@ def ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test):
         return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
 
-
+# Part of 2 (e) - Feature extraction below uses tuned hyperparameter ngram_range= (1, 2) in the TfidVectoriser (that
+# also uses a custom tokenizer)
 def ExtractFeatures_with_custom_tokenizer(X_train, X_test, y_train, y_test):
     # (e) Implement a new custom tokenizer and pass it to the tokenizer argument of TfidfVectorizer.
     # You can use this function in any way ypu like to try to achieve the best classification
@@ -547,6 +556,11 @@ def ExtractFeatures_with_custom_tokenizer(X_train, X_test, y_train, y_test):
     return X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names
 
 
+# Part 2 (e) Further attempt to extract features but this time using TfidfVectorizer (that uses custom tokenizer)
+# this attempt uses tuned hyperparameter ngram_range=(1, 2) and min_df=3. Min_df using pipeline_for_hyperparameter_tuning2()
+# was eventually commented out in function below as it lowered macro average f1 score. The tokenize_text2 tokenizer uses text that has been preprocessed
+# including stemming of each word in the text which resulted in higher macro average f1 score when classifying speeches
+# data
 def ExtractFeatures_with_custom_tokenizer_using_tuned_hyperparameters(X_train, X_test, y_train, y_test):
     # (e) Implement a new custom tokenizer and pass it to the tokenizer argument of TfidfVectorizer.
     # You can use this function in any way ypu like to try to achieve the best classification
@@ -706,8 +720,11 @@ def classifier_pipeline(X_train, y_train, X_test, y_test):
 
 
 
-#Part of 2 (d)
+# Part of 2 (d)
+# Adjust the parameters of the TfidVectorizer so that unigrams, bi-grams and tri-grams will be considered as features,
+# limiting the total number of features  to 3000. Print the classification report as in 2(c) again using these parameters
 def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
+    """ Tuning hyperparameter for TfIdfVectorizer (that uses default tokenizer) """
     """
 
     Args:
@@ -733,7 +750,7 @@ def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
 
     parameter_grid = {
         "vect__ngram_range": ((1,1),(1,2),(1,3)),  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
-        ##"clf__C": (0.01, 0.1, 1, 10, 100),  #Was used to find optimal parameter cost value for LinearSVC
+        ##"clf__C": (0.01, 0.1, 1, 10, 100),  #Was used to find optimal parameter cost value for LinearSVC classifier
     }
 
     random_search = RandomizedSearchCV(
@@ -782,7 +799,9 @@ def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
 
     return
 
-#Part of 2(e)
+# Part of 2(e)
+# Trying to find the best parameters for TfidVectoriser with custom tokenizer to improve classification performance
+# Also shows previous hyperparameter tuning for cost function of LinearSVC classifier
 def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
     """ Hyperparameter tuning for the tfidfVectoriser that uses the custom tokenize_text2() tokenzier
 
@@ -811,7 +830,7 @@ def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
         "vect__tokenizer": [tokenize_text2],
         "vect__ngram_range": [(1,2)],  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
         "vect__min_df": [2,3]
-        ##"clf__C": (0.01, 0.1, 1, 10, 100),   #Was used to find optimal parameter cost value for LinearSVC
+        ##"clf__C": (0.01, 0.1, 1, 10, 100),   #Was used to find optimal parameter cost value for LinearSVC classifier
     }
 
     random_search = RandomizedSearchCV(
