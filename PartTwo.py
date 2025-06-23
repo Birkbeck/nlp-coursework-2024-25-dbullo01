@@ -313,7 +313,7 @@ def remove_additional_whitespace_characters(text):
         text: text with additional whitespace removed
 
     Called by:
-        tokenize_text() function
+        tokenize_text() and tokenize_text() functions
     """
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
