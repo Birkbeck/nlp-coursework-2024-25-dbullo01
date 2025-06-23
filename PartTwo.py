@@ -835,7 +835,8 @@ def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
 
     parameter_grid2 = {
         "vect__tokenizer": [tokenize_text2],
-        "vect__ngram_range": [(1,2)],  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
+        "vect__ngram_range": [(1,2)],  # Using already tuned hyperparameter value (1,2) from
+                                       # previous tuning pipeline_for_hyperparameter_tuning()
         "vect__min_df": [2,3]
         ##"clf__C": (0.01, 0.1, 1, 10, 100),   #Was used to find optimal parameter cost value for LinearSVC classifier
     }
