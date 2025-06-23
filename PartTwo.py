@@ -725,6 +725,7 @@ def classifier_pipeline(X_train, y_train, X_test, y_test):
 # Part of 2 (d)
 # Adjust the parameters of the TfidVectorizer so that unigrams, bi-grams and tri-grams will be considered as features,
 # limiting the total number of features  to 3000. Print the classification report as in 2(c) again using these parameters
+# ngram_range = (1,2) was found to be the most optimal hyperparameter and was used in the extract feature methods/functions
 def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
     """ Tuning hyperparameter for TfIdfVectorizer (that uses default tokenizer) """
     """
