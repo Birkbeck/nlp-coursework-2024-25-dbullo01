@@ -291,7 +291,7 @@ def remove_special_chars(text):
         text: text with special characters removed
 
     Called by:
-        tokenize_text() function
+        tokenize_text() and tokenize_text2() functions
     """
     # REF: https://www.geeksforgeeks.org/python/python-removing-unwanted-characters-from-string/
     # Choosing to keep alphanumeric including digits and removing any other characters
