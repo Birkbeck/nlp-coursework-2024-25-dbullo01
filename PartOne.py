@@ -643,6 +643,12 @@ def syntactic_objects_counts(doc):
     #https://www.youtube.com/watch?v=vSBATq2KvjQ - Watched to know what a Object and Subject is
     # REF https://en.wikipedia.org/wiki/Object_(grammar) to identify types of object in english grammar
     #REF https://spacy.io/models/en#en_core_web_sm  FOR PARSE TAGS FOR SPACY MODEL To identify obj parser tags
+    #REF https://github.com/explosion/spaCy/blob/master/spacy/glossary.py  script was searched to find "object" spacy labels
+    #There were a few that were in the script. The Spacy model documentation had a labels section fro the English language
+    # model that I looked in. I saw the ones I used (dobj, iobj, pobj). I couldnt be certain if there were others
+    #based on what I saw in the https://github.com/explosion/spaCy/blob/master/spacy/glossary.py script and what was
+    #available under the labels section of the english model on spacy
+
 
     itemList = []
 
