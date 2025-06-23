@@ -585,7 +585,9 @@ def ExtractFeatures_with_custom_tokenizer_using_tuned_hyperparameters(X_train, X
     vectorizer = TfidfVectorizer(
         max_features=3000,
         ngram_range=(1, 2),
-        min_df=3,
+        #min_df=3,                   # min_df=3 was tuned hyperparameter from pipeline_for_hyperparameter_tuning2() but
+                                     # including it would lower the Macro average f1 -score so commented it out in the
+                                     # actual feature extraction
         #stop_words=None,            #stop words handled by tokenizer_text() custom function
         #lowercase=False,            #lowercase handled by tokenizer_text() custom function
         tokenizer=tokenize_text2,    #calls custom tokenizer and preprocesses and then tokenizes text
@@ -704,7 +706,7 @@ def classifier_pipeline(X_train, y_train, X_test, y_test):
 
 
 
-
+#Part of 2 (d)
 def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
     """
 
@@ -780,6 +782,7 @@ def pipeline_for_hyperparameter_tuning(X_train, X_test, y_train, y_test):
 
     return
 
+#Part of 2(e)
 def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
     """ Hyperparameter tuning for the tfidfVectoriser that uses the custom tokenize_text2() tokenzier
 
@@ -806,16 +809,15 @@ def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
 
     parameter_grid2 = {
         "vect__tokenizer": [tokenize_text2],
-        "vect__ngram_range": [(1,3)],  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
-        "vect__min_df": [3,4,5],
-        "vect__max_features": [3000],
+        "vect__ngram_range": [(1,2)],  # trialing uni-grams, bi-grams and tri-grams for TfidfdVectoriser
+        "vect__min_df": [2,3]
         ##"clf__C": (0.01, 0.1, 1, 10, 100),   #Was used to find optimal parameter cost value for LinearSVC
     }
 
     random_search = RandomizedSearchCV(
         estimator=pipeline2,
         param_distributions=parameter_grid2,
-        n_iter=6,
+        n_iter=4,
         random_state=0,
         n_jobs=2,
         verbose=1
@@ -918,11 +920,6 @@ if __name__ == "__main__":
 
 
 
-#    print("")
-#    # print("Loading Data and Feature Extraction using TfidfVectorizer")
-#    print("Loading Data")
-#    print("")
-#    X_train, X_test, y_train, y_test = LoadData(df)
 
     print("")
     print("Feature Extraction using TfidfVectorizer")
@@ -952,6 +949,6 @@ if __name__ == "__main__":
         y_test)
 
     print("")
-    print("Training classification models")
+    print("Training classification models - Best Classification Performance")
     print("")
     classifier_pipeline(X_train_extracted_features4, y_train4, X_test_extracted_features4, y_test4)
