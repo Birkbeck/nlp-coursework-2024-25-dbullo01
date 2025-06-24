@@ -287,7 +287,7 @@ def remove_accents(text):
     """
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
-    # Code from Sarkar
+    # Code from Sarkar chapter 3
     text = unicodedata.normalize('NFKD',text).encode('ascii','ignore').decode('utf-8','ignore')
     return text
 
