@@ -23,6 +23,8 @@ from nltk.tokenize import sent_tokenize
 import nltk.corpus
 import string
 
+import spacy
+
 
 # Part Two - Feature Extraction and Classification
 
@@ -262,7 +264,6 @@ def tokenize_text2(text):
     return new_word_tokens
 
 
-
 def remove_accents(text):
     """ Removed accents from accented text
     Args:
@@ -277,7 +278,7 @@ def remove_accents(text):
     """
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
-
+    # Code from Sarkar
     text = unicodedata.normalize('NFKD',text).encode('ascii','ignore').decode('utf-8','ignore')
     return text
 
@@ -298,7 +299,7 @@ def remove_special_chars(text):
     # Digits such as dates and times are useful for context in the speeches
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
-
+    # Code adapted from Sarkar
     text = re.sub(r'[^a-zAA-z0-9\s]', '', text)
     return text
 
@@ -317,6 +318,7 @@ def remove_additional_whitespace_characters(text):
     """
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+    #Code from Sarkar
 
     text = re.sub(' +', ' ', text)
     return text
@@ -362,6 +364,46 @@ def stemmer2(tokens):
         stemmed_word = ps.stem(word)
         stemmedwords.append(stemmed_word)
     return stemmedwords
+
+
+def lemmatise(text):
+    """ lemmatise words from text
+
+        Args:
+            text: input text to lemmatise
+
+        Returns:
+            text :  text containing lemmatised words
+
+        Called by:
+            tokenize_text2() function
+        """
+    # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
+    # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
+    # Using SpaCy for lemmatising text as it is quicker than NLTK and also does POS tagging
+    # Code below adapted from Sarkar - tried to use in tokemize_text2() function by returning firstly tokens
+    # from this function to tokenize_text2() to work with unsuccessfully and then instead returning tokens to
+    # tokenize_text2() to work with again unsuccessfully. Sarkar mentions lemmatisation of text with Spacy
+    # is quicker than NLTK but it was taking a very long time using Spacy (appeared hanging) so reverted
+    # to just using stemming via porterstemmer (original tokenize_text2() code). Very disappointed I could not get
+    # lemmatisation to work in the tokenize_text2() function. I think a dynammic programminga approach may have been
+    # required for the lemmatization or using multiple cores via the TfidVectorizer parameter. Due to time I decided
+    # to focus on getting the write up started [24/06/2025). If I had more time would have like to try correcting
+    # spellings and handling the cpntractions of words in the text to try to improve text classification performance
+    # based on techniques described by Sarkar
+
+    # Code below adapted from Sarkar
+
+    lemmatised_tokens =[]
+    nlp = spacy.load('en_core_web_sm')
+    doc = nlp(text)
+    #Take tokens that are not punctuation of digits frpm spacy doc amd take the retuned list of tokens and convert to
+    #token.lemma_ and join them back into text format
+    #lemmatised_tokens = [token.lemma_ if token.lemma_ != '-PRON-' else token.text for token in doc]
+    lemmatised_text = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' else token.text for token in doc])
+
+    return lemmatised_text
+
 
 def ExtractFeatures(X_train, X_test, y_train, y_test):
     # (b) vectorise the speeches using TfidVectorizer from scikit-learn. Use the default parameters, except for
