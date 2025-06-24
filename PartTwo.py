@@ -327,7 +327,7 @@ def remove_additional_whitespace_characters(text):
     """
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
-    #Code from Sarkar
+    #Code from Sarkar Chapter 3
 
     text = re.sub(' +', ' ', text)
     return text
