@@ -309,7 +309,7 @@ def remove_special_chars(text):
     # REF - Dipanjan, Sarkar (2019) - Text Analytics with Python. A Practitioners Guide to
     # Natural Language Processing. Second Edition. Chapter 3 Processing and Understanding text
     # Code adapted from Sarkar
-    text = re.sub(r'[^a-zAA-z0-9\s]', '', text)
+    text = re.sub(r'[^a-zA-z0-9\s]', '', text)
     return text
 
 
