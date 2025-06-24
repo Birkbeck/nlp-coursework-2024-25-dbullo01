@@ -212,6 +212,15 @@ def tokenize_text(text):
     return new_word_tokens
 
 
+# Tried to incorporate lemmatise() function into tokenize_text2() function to lemmatise text and imporve text classification performance
+# but was unsuccessful as  lemmatization with spacy (gives POS and better lemmatization as a result) but it was taking a
+# long time for the text. Given the time constraints. I decided to stop and focus on the write up  (24/06/2025).
+# Sarkar mentioned in Chapter 3 of his book that that spacy lemmatization is quicker than
+# NLTK lemmatization but I found was taking a very long time and decided to halt the preprocessing  abd leave it
+# out of the process. I opted to leave digits in the tokenization to give additional context such as for dates, times
+# etc thinking this would help with classifying speeches to party. I had tried using is_alpha and found it lowered
+# the macro average f1 score so I excluded it from tokenize_text2()
+
 def tokenize_text2(text):
     """ custom tokenizer that preprocess text for input to the TftdfVectorizer including calling an improved
         stemmer function called stemmer2(). Stemmer2() stems each word in text and improved classification results
