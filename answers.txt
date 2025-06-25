@@ -20,3 +20,489 @@ university students)
 Secondly reliability of grading level score varies according to the sample of text in a document. The score for one part
 of a document might vary from the score calculated for another part of the same document. Hence the reliability between
 different sections of the document varies.
+
+
+
+
+Part Two - (e)
+
+To explain my custom tokenize function I want to explain my approach and then talk about its performance
+
+Text Tokenization
+
+Is the process of splitting a corpus of text such as a document or paragraph into sentences that can be further split
+into clauses, phrases or words. Sentence and word tokenization are popular techniques for text tokenization of breaking
+text into sentences and sentences into words (Ref Sarkar, 2019)
+It was felt it best to use NLTK sentence tokenizer (sent_tokenize()) to split the pre-processed text data into sentences.
+Then to use the NLTK work tokenizer (word_tokenise()) to split the sentences into word tokens. It was an approach used
+by Sarkar (2019) in Chapter 3 of Text Analytics using Python book and I felt it would be an alternative to using SpaCy
+for tokenization for the custom tokenizer function
+I cleaned the text with the preprocessing steps mentioned previously but needed to keep punctuation for the sentence
+tokenization. Sarkar discusses various tokenizer and recommended the default word tokenizer for NLTK which is word_tokenise().
+Its internal implementation is the Treebank Word Tokenizer Class, with word_tokenize being the wrapper to  this
+Class (Sarkar).
+The TreeBankWordTokenizer is based on the Penn Treebank and tokenization of text is done using regular expressions.
+The TreebankWordTokenizer assumes text has already gone through Sentence Tokenization and hence word_tokenize requires
+the same pre-requisites. Sarkar outlined the regular expression patterns used in the tokenizer can be found  at a
+sed script at https://www.cis.open.edu/~treebank/tokenizer.sed
+
+
+Sentence Segmentation
+
+Sentence tokenization was used as it is a prerequisite of NLTK word tokenizer() function to have sentence tokens.
+The corpus text is split into sentences that are meaningful (Sarkar). Sentence tokenization can be done looking for
+a delimiter like ` . ’ between sentences or a new line character  ` \n’  or ` ; ‘  semi-colon. NLTK provides different
+interfaces for sentence tokenization including sent_tokenize(), Pre trained sentence tokenization models,
+PunktSentenceTokenizer and RegexpTokenizer (Sarkar).
+
+Tokenization details
+
+I chose to use NLTK Sent_Tokenise() function which is the default sentences tokenizer in NLTK. It uses the
+PunktSentenceTokenizer Class which works well with English language text. It does more than the PunktSentenceTokenizer
+Class. According to Sarkar it considers punctuation and capitalization of words in addition to the usual periods to
+tokenize text into sentences as it is based on pretrained model.
+If the text was a language other than English, I would have tried NLTK Pretrained Sentence Tokenizer Models as they are
+available for certain languages and are pretrained to do sentence tokenization from text.   Sarker showed how they work
+and produce the same results as that obtained from the default PunktSentenceTokenizer
+Sentence segmentation could have also been done using RegexpTokenizer where Reg ex expression patterns are used to
+segment text into sentences. It achieves the same result as the other sentence tokenization methods (Sarkar).
+Sarker explained the logic conditions the PunktSentenceTokenizer and thus the Sent_tokenize() functionality uses;
+•	Splitting the text so periods appear at the end of the sentence
+•	Commas and single quotes followed by white space are also used to split and separate text
+•	Using punctuation characters to split the text into tokens
+•	Handles contractions by splitting them  e.g. splitting word “don’t”  into “do” and “n’t”
+Hence the conditions for TreeBankWordTokenizer are the same for the NLTK Sent_Tokenise() functionality used in my custom
+ tokenizer functions.
+
+Word Tokenization
+
+It was important that when doing word tokenization that text would be cleaned and normalized as stemming and lemmatization
+requires this as they work with stems and lemmas (Sarkar)
+The other word tokenizers I could have chosen included NLTKs other tokenizers TokTokTokenizer, RegExpTokenizer which uses
+RegEx expression and gaps parameter that represents the gap between tokens. The RegExpTokenizer uses RegEx expressions to
+build the tokenizer  and the gaps parameter can be used in many ways to tokenize text (such as leveraging reg expression
+pattern and gaps parameter to get token boundaries for each token during tokenization) (Sarkar)
+The inherited tokenizers from RegExpTokenizer uses derived classes other than the RegExpTokenizer Class and these perform
+a different type of tokenization. An example is WordPunktTokenizer that uses the RegEx pattern r` \w+ |  [^\w\s]+’ to
+tokenize sentences with alphabetic and non alphabetic tokens (Sarkar).
+Another option was the NLTK White Space Tokenizer which also is an NLTK class and creates tokens from sentences using words
+based on whitespace e.g. spaces, tabs and  new lines.
+I chose not to use TokTokTokenizer as it assumes one sentence per line in the text and there being one period as the end
+of the sentence, hence additional periods would have to be removed using regular expressions.
+Time constraints meant I couldn’t try these tokenizers in my custom tokenizer function(s) to see what effect they would
+have on feature extraction performance and subsequent text classification performance.
+
+Custom Tokenizer Function implementation details
+
+Due to time constraints it was decided it best to implement the customer tokenizer as a standalone function that could be
+passed to the TfIdfVectorizer by setting the TfIdfVectorizer tokenizer parameter to the name of the custom tokenizer.
+I created two tokenizer functions. My first attempt, tokenize_text() and my second attempt tokenize_text2().
+Both tokenize_text() and tokenize_text2() functions were implemented to do text preprocessing (normalizing/standardizing
+data)  typical for NLP tasks such as for text classification task. I did some research and came across a book called
+Text Analytics using Python by Dipanjan Sankar and read Chapter 3 on Processing and Understanding Text. This chapter
+covered common text preprocessing methods in NLP. Preprocessing was explained with example of NLP libraries to use and
+python code examples of their use.  I decided to implement where I could some of the described text preprocessing tasks
+into both the tokenize_text function I had implemented. Note  I use only one for the final implementation  i.e.
+tokenize_text2() to achieve the best classification I could (shown on the classification report that is output from
+running PartTwo.py python script).
+I decided to implement helper functions for the tokenize text functions that would do most of the preprocessing methods.
+There were;
+Remove accents from text. This was done suing the remove_accents() function that I implemented that took text as input
+and returned text without accented text. Text was converted to ASCII characters so that words in the text are standardized.
+The python library unicodedata was used to convert accented characters to ASCII characters.
+The next text preprocessing task  was to identify and remove any special characters from the text which would add noise
+to the data and hamper text classification. I implemented remove_special_char() function. The function took text as an
+input and returned text with special characters removed. This function uses regex to remove special characters
+(non-alpha-numerical characters) using pattern matching via regex expression. Special characters cause unstructured text
+data to contain noise. Thus, removing special characters help to reduce the “noise”. It was felt that numbers (digits)
+should be kept and not be removed due to the extra context it could give to help with the text classification task.
+It was felt that the numbers could represent dates, time, age, contact details etc which could help with classifying
+the speech data to a political party.
+The third processing task implemented in the custom tokenize_text functions was to remove additional white space from
+input text. This was implemented in the remove_additional_whitespace_characters() function. The function takes text as
+input and returns the text with the additional whitespace characters removed. This would help with the tokenization
+step of the preprocessing  of splitting text (text tokenization) sentences (sentence tokenization) and then  words into
+(word tokens). The aim was to leave whitespace around each word but not additional whitespace so that tokenization of
+text  based on word boundaries is more effective/accurate. Again, regex expression was used to identify additional
+white space characters to remove before they were removed from the input text.
+The next preprocessing task implemented was for stemming text. It was felt that stemmed text where affixes (prefixes,
+suffixes etc) attached to words creating inflected words could be identified and the inflection removed leaving the
+base form of a word. This standardisation of words in text helps with better performance of the text classification task.
+There were many stemmers available but one was chosen to be used in the stemmer() function I implemented and called by
+the tokenize_text() function and stemmer2() function was implemented and called by the tokenize_text2() function.
+The popular NLTK PorterStemmer library function was chosen to be implemented into the stemmer functions that were
+implemented. PorterStemmer has 5 stages to the stemming process compared to say the Lancaster Stemmer which has 120 rules.
+The NLTK Lancaster stemmer was shown by Sarkar to have some words that could not be stemmed (were not stemmed).
+The stemmer() function that was implemented and called by tokenize_text() function takes a complete text and tries to
+stem the words using the PorterStemmer but was found to be ineffective on whole text as an input. Hence the stemmer2()
+function was created and was the reason/ justification for tokenize_text2() function. Stemmer2()
+is called by tokenize_text() function and takes each word(token) in the text document and stems it like before also
+using the NLTK PorterStemmer, before rejoining the list of returned stemmed words  to become whole text again for
+further text preprocessing.
+The text returned after going through all the mentioned preprocessing steps is then tokenized into sentences using NLTK
+sent_tokenize() functionality. The input text data was lowercased before passing it to the sent_tokenize() function for
+segmenting/tokenizing the text into sentences. These sentences were then tokenized into words using the NLTK work_tokenizer()
+function. It was felt that sentence and then word tokenization would give better tokenization results rather than using
+ NLTK word_tokenize() on its own. This was implemented in both the tokenize_text() and tokenize_text2() functions.
+ The problem with using both tokenization process steps was that a list of sublists was created and TfIdfVectorizer
+  requires a list of text strings rather than list of sublists. Hence an additional function was written called
+  flatten_nested_list() and called by both tokenize_text functions to flatten the list of sublists that was being
+  output previously. This allowed output returned from   both tokenize_text functions to be  a list of text strings
+  instead which is exactly what the analyser of the TfidfVectorizer requires when analyser parameter is set to be ‘word’
+The final text preprocessing step implemented in both tokenize_text() functions was to use NLTK stopwords list to only
+retain (word) tokens that do not appear in the NLTK stopwords list. The NLTK stopword list  was deemed appropriate as
+Sankar mentioned there was no universal  list of stopwords available. I chose this method as source for filtering of
+stopwords due to this but also because the TfidfVectoriser documentation stated that the stopwords parameter when set
+doesn’t have a good list of stopwords for English language. Hence the stopwords parameter was disabled  in the
+TfidVectoriser and filtering stopwords from NLTK stopword list was handled instead as a preprocessing step after
+tokenization step  to filter tokens and keep only those that did not appear in the l NLTK stopwords list.
+The use of a stopword list reduces the number of tokens that are to be used in the text classification task.
+I did a check to see what stopwords were removed and what tokens remained to test the functionality and it did
+remove/exclude stopwords. It was felt the NLTK stopword list was easy to work with and was implemented in the
+tokenize_text and tokenize_text2 functions.  Please refer to PartTwo.py code to see the functions implemented and
+the logic used for tokenization.
+
+Other attempts
+
+I tried to use SpaCy also but for incorporating lemmatizing of text in the tokenize_text2() function but found
+ the lemmatizing or word to be very slow despite Sarkar documenting that Spacy for lemmatizing words is quicker
+ than using NLTK. Due to time constraints, I was not able to resolve the slow lemmatization but do think a
+ possibility to overcome issues could be to use dynamic programming or use of multiprocessing  and specifying
+ the number of cores to use by specifying that in the TfIdfVectorizer parameter which might have possibly helped
+ with feature extraction speed due to slow lemmatization in the custom tokenizer function
+
+
+Additional Functionality I would have like to have implemented or used in my customer tokenizer function
+
+Sarkar discussed other text preprocessing steps such as correcting spellings in text, expanding contractions such
+as ‘n’t’ produced by the NLTK word_tokenise() word tokenizer , removing repeating characters from text (text correction).
+I would have liked to implement those functions to see if they would improved feature extraction for the text
+classification task, but unfortunately there wasn’t enough time.
+
+Integration of Custom tokenizer function (tokenize_text2()) with the TfIdfVectorizer (Reference TfIdfvectoriser Sci-Kit
+ learn help documentation)
+The following parts of the TfIdfVectorizer was disabled (either by the use of the custom tokenizer or parameters were
+not set and the default of none was used) . In some cases, parameters had to be a certain value as result of using a
+custom tokenizer e.g. analyzer parameter set to ‘word’ value
+The use of the custom tokenizer and its preprocessing and tokenization functionality was to replace the use of lowercase,
+tokenizer, strip_accents, preprocessor, stop_word. token_pattern parameter functionality. It did seem that preprocessor
+and token pattern might not be able to disable/be overridden and have to use something. Hence potentially there could
+be a conflict with what TfidfVectorizer does and what my customize tokenizer function does for those
+parameters/functionality
+
+strip_accents : was set to None by default so could avoid TfIdfVectorizer stripping accents and using my custom tokenizer
+to do so.
+
+lowercase: default is True so lowercase was used by default despite custom tokenizer lowercasing text during sentence
+tokenization.
+
+preprocessor: parameter wasn’t set as custom tokenizer does preprocessing and the default is None which means the
+
+TfidfVectoriser preprocessor by default is used. In hindsight would have probably used the default preprocessor rather
+than implement preprocessing text functionality to see how it performed with custom tokenization only and not the current
+method I have with does both preprocessing of text and tokenization.
+
+tokenizer: The use of custom tokenizer and the tokenizer: parameter being set to the name of the custom tokenizer meant
+that analyzer == ‘word’ had to be set for the analyser parameter analyzer: parameter set to ‘word’
+
+stop_word : was set as the default (None) when tokenizer: parameter was set to tokenize_text2() (name of my custom tokenizer).
+NB. The use this parameter requires the analyser: parameter to  be set to ‘word’. Stop words were obtained from NLTK Stop
+Words list in my custom tokenize function hence stop word was not set and the default is None.
+
+token_pattern : token pattern wasn’t disabled by the use of tokenize_text2() custom tokenizer function. It’s possible that
+the default token_pattern of r’(?u)\b\w\w+\b’  was used to tokenize words even though NLTK sent_tokenize() and
+NLTK word_tokenize() functions are used in the custom tokenizer function to tokenize the input text.
+
+ngram_range: during hyperparameter tuning tuple for ngrams was used (1,1), (1,2) and (1,3) ngram_range of (1,2) i.e. both
+unigrams and bigrams was found to give best text classification performance compared to the other ngram ranges. This
+parameter could be set because analyser: parameter was not set to a callable
+
+max_df: parameter was not set and the default is 1.0 meaning words are not excluded based on their document frequency.
+
+min_df: default is 1. Uses Hyperparameter tuning to find optimal value and 3 was chosen from the values I specified in
+my parameter grid but using it lowered the macro average f1 score in the classification report for the classifiers.
+
+max_features: was set to a maximum of 3000 features ordered by the term frequency across the corpus
+
+vocabulary: parameter was not set – Default is None,  meaning a vocabulary was determined from the input document.
+This parameter could not be set as max_features has to be 3000 and if max_features is set which it was, vocabulary has
+ to be None otherwise max features of 3000 would be ignored.
+
+binary: parameter was not set and default None means Norm 0/1 outputs
+
+norm: parameter was not set, default is ‘L2’ – Number of sum of squares of vector elements is 1. The dot product
+between two vectors produces the cosine similarity between the two vectors when l2 norm is applied
+
+use_idf: Not set but default is True so inverse-document frequence reweighting was used
+
+smooth_idf: Not set but default is True so Smooth idf weights was used by adding one to document frequencies
+
+sublinear_tf: Was not set and the default=False. If it was set to apply sublinear tf scaling i.e. replace tf with 1 + log(tf).
+I ended up adding to the ExtractFeatures_with_custom_tokenizer_using_tuned_hyperparameters function and it slightly improved
+the best classification macro average f1 score achieved slightly more. However, I decided it could be avoided to reduce
+performance overhead and having more hyperparameters than needed
+
+
+
+
+Output data structure that needing to be produced by the Custom Tokenizer
+
+The TfIdfVectorizer required the custom tokenizer function to take input as text and to produce a list of tokens as output.
+As mentioned previously the use of NLTK sent_tokenize() and NLTK word_tokenize() functionality for sentence and word
+tokenization respectively  resulted in a list of sub-lists which involved nesting and  had to be flattened to a list
+of strings  (tokens) before the output met the needs/requirements of the analyser; parameter (which was set to “word”
+parameter value).
+
+
+Performance of the custom tokenizer
+
+The custom tokenizer was compared to TfidfVectorizer default tokenizer functionality in terms of time taken to produce
+tokens. A pipeline was developed to load data, extract features and perform text classification task using a couple of
+classification models (Random Forest and LinearSVC). Feature Extraction using TfidfVectorizer (with default tokenizer)
+and (TfidfVectorizer with (custom tokenizer) were compared using timings and the  classification report was used to
+assess the overall performance of the classification task based and also gave an indication of the  quality of the
+extracted features used to train the Random Forest and LinearSVC models. The time and performance of the following was
+compared;
+
+(a)	TfidfVectorizer using default tokenizer to extract features and train models and fit on test data and make predictions
+with max features set to 3000  and setting stopwords parameter to English stopwords,   2 (c) using the following metrics;
+Default tokenizer time duration using words:
+
+Macro average f1 score:  for Random Forest (using n_estimators=300 and all other parameters using default parameter values)
+Macro average f1 score: for LinearSVC (C=0.1, dual=False, max_iter=10000,class_weight="balanced")
+
+Actual Output Metrics for Feature Extraction using TfidfVectorizer (default tokenizer)  (Baseline Benchmark)
+
+train time 2.280099
+test time 0.633729
+6063 documents (training set)
+2021 documents (testing set)
+Vectorise training done: 2.280099  seconds
+X_train n_samples:  6063 X_train n_features: 1
+Vectorise testing done: 0.633729  seconds
+X_test n_samples:  2021 X_test n_features: 1
+
+Training classification models
+
+================================================================================
+Random Forest
+y_train n_samples : 6063
+Y_train n_features: 1
+Training  RandomForestClassifier(class_weight='balanced', n_estimators=300)
+classification report:
+                         precision    recall  f1-score   support
+
+           Conservative       0.70      0.98      0.82      1205
+                 Labour       0.85      0.37      0.51       579
+       Liberal Democrat       1.00      0.03      0.06        67
+Scottish National Party       0.86      0.40      0.55       170
+
+               accuracy                           0.73      2021
+              macro avg       0.85      0.45      0.48      2021
+           weighted avg       0.77      0.73      0.68      2021
+
+macro average f1 score: 0.48400248412990676
+================================================================================
+Linear SVC
+y_train n_samples : 6063
+Y_train n_features: 1
+Training  LinearSVC(C=0.1, class_weight='balanced', dual=False, max_iter=10000)
+classification report:
+                         precision    recall  f1-score   support
+
+           Conservative       0.84      0.90      0.87      1205
+                 Labour       0.73      0.68      0.70       579
+       Liberal Democrat       0.64      0.37      0.47        67
+Scottish National Party       0.61      0.60      0.60       170
+
+               accuracy                           0.79      2021
+              macro avg       0.71      0.64      0.66      2021
+           weighted avg       0.79      0.79      0.79      2021
+
+macro average f1 score: 0.6623108610686814
+dimensionality:  {3000}
+density:  {1.0}
+
+(b)	TfidVectorizer using default tokenizer to extract features and train models using the extracted features  and fit
+on test data and make predictions using default tokenizer with  ngram_range set to tuned parameter value i.e. (1,2)
+and max_features to 3000 features and stopwords parameter set to English stopwords. , 2 (d) using the following metrics;
+
+Default tokenizer time duration using ngrams :
+Macro average f1 score:  for RandomForest (using n_estimators=300 and all other parameters using default parameter values)
+Macro average f1 score: for LinearSVC (C=0.1, dual=False, max_iter=10000,class_weight="balanced")
+
+Actual Output Metrics for Feature Extraction using TfidfVectorizer using default tokenizer for (unigrams and bigrams)- after
+selecting this n-gram range parameter value from hyperparameter tuning
+
+train time 7.399231
+test time 1.049994
+6063 documents (training set)
+2021 documents (testing set)
+Vectorise training done: 7.399231  seconds
+X_train n_samples:  6063 X_train n_features: 1
+Vectorise testing done: 1.049994  seconds
+X_test n_samples:  2021 X_test n_features: 1
+
+Training classification models
+
+================================================================================
+Random Forest
+y_train n_samples : 6063
+Y_train n_features: 1
+Training  RandomForestClassifier(class_weight='balanced', n_estimators=300)
+classification report:
+                         precision    recall  f1-score   support
+
+           Conservative       0.71      0.98      0.82      1205
+                 Labour       0.85      0.40      0.55       579
+       Liberal Democrat       0.00      0.00      0.00        67
+Scottish National Party       0.84      0.45      0.58       170
+
+               accuracy                           0.74      2021
+              macro avg       0.60      0.46      0.49      2021
+           weighted avg       0.74      0.74      0.70      2021
+
+macro average f1 score: 0.4881296126773798
+================================================================================
+Linear SVC
+y_train n_samples : 6063
+Y_train n_features: 1
+Training  LinearSVC(C=0.1, class_weight='balanced', dual=False, max_iter=10000)
+classification report:
+                         precision    recall  f1-score   support
+
+           Conservative       0.85      0.90      0.88      1205
+                 Labour       0.75      0.68      0.71       579
+       Liberal Democrat       0.55      0.40      0.47        67
+Scottish National Party       0.63      0.64      0.64       170
+
+               accuracy                           0.80      2021
+              macro avg       0.70      0.66      0.67      2021
+           weighted avg       0.79      0.80      0.80      2021
+
+macro average f1 score: 0.6732262773924261
+dimensionality:  {3000}
+density:  {1.0}
+
+
+
+( c) TfidVectorizer using custom tokenizer to extract features and train models using the  extracted features  and fit
+on test data and make predictions using custom tokenizer with  ngram_range set to tuned parameter value i.e. (1,2) and
+max_features to 3000 features and all other parameters not set and using default values , 2 (e) using the following metrics
+
+Custom tokenizer time duration using ngrams:
+Macro average f1 score:  for RandomForest (using n_estimators=300 and all other parameters using default parameter values)
+Macro average f1 score: for LinearSVC (C=0.1, dual=False, max_iter=10000,class_weight="balanced")
+
+Actual Output Metrics for Feature Extraction using TfidfVectorizer configured to use unigrams and bigrams from previously
+tuned Hyper-parameters and Custom Tokenizer - tokenize_text2;
+
+train time 64.166442
+test time 20.365135
+6063 documents (training set)
+2021 documents (testing set)
+Vectorise training done: 64.166442  seconds
+X_train n_samples:  6063 X_train n_features: 1
+Vectorise testing done: 20.365135  seconds
+X_test n_samples:  2021 X_test n_features: 1
+
+Training classification models - Best Classification Performance
+
+================================================================================
+Random Forest
+y_train n_samples : 6063
+Y_train n_features: 1
+Training  RandomForestClassifier(class_weight='balanced', n_estimators=300)
+classification report:
+                         precision    recall  f1-score   support
+
+           Conservative       0.70      0.99      0.82      1205
+                 Labour       0.86      0.35      0.49       579
+       Liberal Democrat       1.00      0.03      0.06        67
+Scottish National Party       0.87      0.42      0.56       170
+
+               accuracy                           0.72      2021
+              macro avg       0.85      0.45      0.48      2021
+           weighted avg       0.77      0.72      0.68      2021
+
+macro average f1 score: 0.48316450828565516
+================================================================================
+Linear SVC
+y_train n_samples : 6063
+Y_train n_features: 1
+Training  LinearSVC(C=0.1, class_weight='balanced', dual=False, max_iter=10000)
+classification report:
+                         precision    recall  f1-score   support
+
+           Conservative       0.85      0.90      0.88      1205
+                 Labour       0.77      0.70      0.73       579
+       Liberal Democrat       0.60      0.43      0.50        67
+Scottish National Party       0.69      0.66      0.67       170
+
+               accuracy                           0.81      2021
+              macro avg       0.73      0.67      0.70      2021
+           weighted avg       0.80      0.81      0.81      2021
+
+macro average f1 score: 0.6960239936863423
+dimensionality:  {3000}
+density:  {1.0}
+
+It could be seen that using the implemented customised tokenizer function increased vectorizing training time over 28x
+increase from the time taking using the benchmark vectorizing training time
+There was a 32x increase in vectorizing test time compare to the benchmark vectorizing testing time
+It could be seen that there needs to be a trade-off between using faster to produce tokens (using TfidfVectoriser and
+the default token pattern (RegEx pattern) approach to tokenization where the quality might not be ideal for certain NLP
+problems/tasks such as the needs of certain problem domains. Alternatively, to use custom tokenizers which can use third
+party tokenizer(s) which seem to be slower  (based on experiencing slower speed when using NLTK tokenizers for sentence
+and word tokenization and SpaCy for the Lemmatization attempt for tokenizing text in the tokenize_text2() custom tokenizer
+function).
+One main problem was that the use of unigram and bigrams during tokenization increases the feature space to be larger
+and sparse (number of features larger)  compared to word (unigram) only where feature space is smaller and dense during
+tokenization. Hence a trade-off exists here where unigram tokenization is quicker or to use unigrams and bigrams which
+is slower but improve model performance (classification task). Unigrams and bigrams were best for the classification
+task hence best to use Unigrams and bigrams where there is a need for context between words as is the case for
+classifying the speeches text for political party and to use unigrams (words) for NLP tasks where context is not needed
+Hence using the custom tokenizer was a lot slower as it was used in the TfidfVectorizer that produces unigrams and bigram
+features. Using a custom tokenizer does appear to give users flexibility and choice to meet their tokenization requirements
+better than the functionality provided by TfidfVectorizer but I had experienced some doubt that optimal functionality
+inherent/available in the vectorizer  may have been bypassed by the use of the custom tokenizer e.g. for preprocessor,
+stopwords filtering etc.
+
+
+Improving the tokenizer code
+
+The custom tokenizer function (tokenize_text2()) would have to be refactored or refined to improve code efficiencies and
+possibly the preprocessing functionality. Some of the preprocessing functionality is available in the TfidfVectorizer
+and might perform better, hence would need further evaluation to see if some of the preprocessing would be better off
+not being done by the custom tokenizer function and using the default preprocessor or set to a separate preprocessor
+callable that would need to be implemented.
+In terms of memory and speed, the right data structures in any implemented code would need to be chosen to  help avoid
+bottlenecks with processing time with the aid of big O notation can help to assess code complexity. Third party solutions
+may have processes that are (I/O and/or CPU bound) which could also affect tokenization performance.
+Muti-processing libraries and/or threading could be used. Dynamic programming/recursion and use of multiprocessing
+where preprocessing tasks are CPU Bound could help depending on the amount of CPU cores available. Setting the
+TfidfVectorizer parameter to use more CPU cores could possibly improve vectorizing training and testing times.
+If time dictated, I would evaluate the speed of the various tokenizers Sarkar outlined in his book to see if any of
+them would have performed quicker and with same/similar tokenization quality. Using RegEx expressions for everything
+where possible may have been quicker.
+The use of many hyperparameters could slow tokenization down, so I tried not to use many hyperparameters in the
+vectorizers and chose to not to include setting parameter sublinear_tf=True which did improve model performance
+(classification) but just slightly.
+
+For the classification task there was an overhead in terms of memory, speed and model performance that was deemed
+acceptable for the custom tokenizer as it produced better quality features that improved classification performance.
+For other situations where the tokenizer is used often or had different requirements custom tokenizer (slower)
+may not be the right approach unless improved and also suitable for the problem domain that the corpus text belongs to.
+
+
+
+References
+
+Dipanjan Sarkar. (2019). Text analytics with Python: a practitioners guide to natural language processing.
+2nd ed. New York: Apress. pp.114-156.
+
+Scikit-Learn documentation on TfidfVectorizer, RandomForest and LinearSVC
+
+
+
+
