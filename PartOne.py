@@ -671,6 +671,8 @@ def syntactic_objects_counts(doc):
 if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
+    
+    Takes about 7 min to run the entire PartOne.py script
     """
     path = Path.cwd() / "texts" / "novels"
     print(path)
