@@ -268,7 +268,8 @@ compared;
 with max features set to 3000  and setting stopwords parameter to English stopwords,   2 (c) using the following metrics;
 Default tokenizer time duration using words:
 
-Macro average f1 score:  for Random Forest (using n_estimators=300 and all other parameters using default parameter values)
+Macro average f1 score:  for Random Forest (using n_estimators=300 and class_weight="balanced" with all other parameters
+using default parameter values)
 Macro average f1 score: for LinearSVC (C=0.1, dual=False, max_iter=10000,class_weight="balanced")
 
 Actual Output Metrics for Feature Extraction using TfidfVectorizer (default tokenizer)  (Baseline Benchmark)
@@ -328,7 +329,8 @@ on test data and make predictions using default tokenizer with  ngram_range set 
 and max_features to 3000 features and stopwords parameter set to English stopwords. , 2 (d) using the following metrics;
 
 Default tokenizer time duration using ngrams :
-Macro average f1 score:  for RandomForest (using n_estimators=300 and all other parameters using default parameter values)
+Macro average f1 score:  for RandomForest (using n_estimators=300 and class_weight="balanced" with all other parameters
+using default parameter values)
 Macro average f1 score: for LinearSVC (C=0.1, dual=False, max_iter=10000,class_weight="balanced")
 
 Actual Output Metrics for Feature Extraction using TfidfVectorizer using default tokenizer for (unigrams and bigrams)- after
@@ -391,7 +393,8 @@ on test data and make predictions using custom tokenizer with  ngram_range set t
 max_features to 3000 features and all other parameters not set and using default values , 2 (e) using the following metrics
 
 Custom tokenizer time duration using ngrams:
-Macro average f1 score:  for RandomForest (using n_estimators=300 and all other parameters using default parameter values)
+Macro average f1 score:  for RandomForest (using n_estimators=300 and class_weight="balanced" with all other parameters
+using default parameter values)
 Macro average f1 score: for LinearSVC (C=0.1, dual=False, max_iter=10000,class_weight="balanced")
 
 Actual Output Metrics for Feature Extraction using TfidfVectorizer configured to use unigrams and bigrams from previously
