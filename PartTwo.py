@@ -932,6 +932,8 @@ def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
 if __name__ == "__main__":
     """
         uncomment the following lines to run the functions once you have completed them 
+        
+        Takes about 17 min to run entire PartTwo.py script
     """
 
     df = read_speeches(path=Path.cwd() / "texts" / "speeches")
@@ -971,7 +973,7 @@ if __name__ == "__main__":
 
 
     print("")
-    print("Feature Extraction using TfidfVectorizer to tokenize based on words using default tokenizer")
+    print("Feature Extraction using TfidfVectorizer to tokenize based on words (unigrams) using default tokenizer")
     print("")
     X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names = ExtractFeatures(X_train,
                                                                                                             X_test,
