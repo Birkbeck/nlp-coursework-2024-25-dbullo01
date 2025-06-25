@@ -895,7 +895,7 @@ def pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test):
     random_search = RandomizedSearchCV(
         estimator=pipeline2,
         param_distributions=parameter_grid2,
-        n_iter=4,
+        n_iter=2,
         random_state=0,
         n_jobs=2,
         verbose=1
@@ -971,7 +971,7 @@ if __name__ == "__main__":
 
 
     print("")
-    print("Feature Extraction using TfidfVectorizer")
+    print("Feature Extraction using TfidfVectorizer to tokenize based on words using default tokenizer")
     print("")
     X_train_extracted_features, X_test_extracted_features, y_train, y_test, feature_names = ExtractFeatures(X_train,
                                                                                                             X_test,
@@ -990,7 +990,7 @@ if __name__ == "__main__":
 
     print("")
     print("")
-    print("Feature Extraction using TfidfVectorizer (bi-gram) - after selecting this n-gram from hyperparameter tuning")
+    print("Feature Extraction using TfidfVectorizer (uni-grams and bi-grams) - after selecting this n-gram from hyperparameter tuning and default tokenizer")
     print("")
     X_train_extracted_features2, X_test_extracted_features2, y_train2, y_test2, feature_names2 = ExtractFeatures_bi_grams(X_train, X_test, y_train, y_test)
 
@@ -1021,7 +1021,7 @@ if __name__ == "__main__":
     pipeline_for_hyperparameter_tuning2(X_train, X_test, y_train, y_test)
 
     print("")
-    print("Feature Extraction using TfidfVectorizer and tuned Hyper-parameters and Custom Tokenizer - tokenize_text2")
+    print("Feature Extraction using TfidfVectorizer using uni-grams and bi-grams from previously tuned Hyper-parameters and Custom Tokenizer - tokenize_text2")
     print("")
     X_train_extracted_features4, X_test_extracted_features4, y_train4, y_test4, feature_names4 = ExtractFeatures_with_custom_tokenizer_using_tuned_hyperparameters(
         X_train,
@@ -1030,6 +1030,6 @@ if __name__ == "__main__":
         y_test)
 
     print("")
-    print("Training classification models - Best Classification Performance")
+    print("Training classification models - Best Classification Performance for Part 2 (e)")
     print("")
     classifier_pipeline(X_train_extracted_features4, y_train4, X_test_extracted_features4, y_test4)
